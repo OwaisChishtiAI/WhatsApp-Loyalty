@@ -1,0 +1,38 @@
+hi
+
+welcome Pic:
+Greetings.
+1.Customer
+2.Merchant
+
+1
+
+Welcome NAME if NAME else ask
+Option for previus places, if no ask place
+scan for add new place
+exit for quiting
+
+1
+
+You have cjecked into PLACE
+Your points balance is POINTS
+------------------------------
+What would you like to do?
+1. Redeem
+2. add
+3. More Options
+
+2
+
+upload image:
+Let's do this
+Take a picture of your receipt
+
+We will now process you receipt, check if your recipt u0ploaded successfully by replying <b>ok</b>
+
+OK
+
+Ok great processing.....
+
+POINTS points were added to your wallet, Your new balance is POINTS.
+REPEAT LINE 20
