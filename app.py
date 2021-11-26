@@ -48,15 +48,21 @@ def reply():
         print("[User Message] ", message)
         customer_number = sender.split(':')[1]
         print("[User Name] ", customer_number)
-        next_state = CustomerJourney.get_next_state(customer_number)
-        if next_state is None:
-            chatbot = ChatBot(customer_number)
-            reply = chatbot.welcome_message()
-            CustomerJourney.post_customer_number(customer_number)
-            CustomerJourney.put_states(reply['state'], reply['next_state'], customer_number)
-            return respond(reply['message'])
+
+    next_state = CustomerJourney().get_next_state(customer_number)
+    chatbot = ChatBot(customer_number)
+    if next_state is None:
+        reply = chatbot.welcome_message()
+        CustomerJourney().post_customer_number(customer_number)
+        CustomerJourney().put_states(reply['state'], reply['next_state'], customer_number)
+        return respond(reply['message'])
+    else:
+        if next_state == "confirm_uploaded_recipt":
+            reply = eval("chatbot." + next_state)
         else:
-            NotImplementedError()
+            reply = eval("chatbot." + next_state)(message)
+        CustomerJourney().put_states(reply['state'], reply['next_state'], customer_number)
+        return respond(reply['message'])
 
 if __name__ == "__main__":
   app.run(debug=True)

@@ -31,7 +31,8 @@ class ChatBot:
         next_state = "greetings_state"
         self.customer_name = customer_name
         self.customer_record.post_customer_name(customer_name, self.customer_number)
-        return {'state' : state, 'next_state' : next_state, 'message' : '1'}
+        return {'state' : state, 'next_state' : next_state, 'message' : f'Hi {customer_name}, Good Day!\n\
+            1. Customer\n2. Merchant\nPlease reply with 1,2,3.. for respective option.'}
 
     def places_state(self, place_option):
         state = "places_state"

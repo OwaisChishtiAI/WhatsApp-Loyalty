@@ -1,7 +1,7 @@
 from database import Connect
 
 class CustomerJourney(Connect):
-    @classmethod
+    
     def get_next_state(self, customer_number):
         cursor = self.pointer()[0]
         sql = f"SELECT next_state FROM ly_customer_journey WHERE customer_number = '{customer_number}'"
@@ -14,7 +14,6 @@ class CustomerJourney(Connect):
         else:
             return None
 
-    @classmethod
     def post_customer_number(self, customer_number):
         cursor, db = self.pointer()
         sql = "INSERT INTO ly_customer_journey (customer_number, current_state, next_state)\
@@ -24,7 +23,6 @@ class CustomerJourney(Connect):
         print("[INFO] POST Customer Number")
         self.close()
 
-    @classmethod
     def put_states(self, current_state, next_state, customer_number):
         cursor, db = self.pointer()
         sql = f"UPDATE ly_customer_journey SET current_state = '{current_state}', next_state = '{next_state}' \
