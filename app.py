@@ -1,3 +1,4 @@
+from datetime import datetime, time
 import os
 from dotenv import load_dotenv
 from flask import Flask, request
@@ -7,12 +8,14 @@ from twilio.rest import Client
 
 from customer_journey import CustomerJourney
 from chatbot import ChatBot
+from ocr_extractor import OCR
 
 load_dotenv()
 # print(os.environ.get("TWILIO_ACCOUNT_SID"))
 
 app = Flask(__name__)
 client = Client()
+ocr = OCR()
 
 def respond(message):
     response = MessagingResponse()
@@ -41,7 +44,7 @@ def reply():
                 os.mkdir(f'uploads/{customer_number}')
             with open(filename, 'wb') as f:
                 f.write(r.content)
-            return respond('Thank you! Your image was received.')
+            # return respond('Thank you! Your image was received.')
         else:
             return respond('The file that you submitted is not a supported image type.')
     else:
@@ -49,18 +52,47 @@ def reply():
         customer_number = sender.split(':')[1]
         print("[User Name] ", customer_number)
 
-    next_state = CustomerJourney().get_next_state(customer_number)
+    next_state, created_at = CustomerJourney().get_next_state(customer_number)
     chatbot = ChatBot(customer_number)
+    if not next_state is None:
+        time_diff = datetime.now() - created_at
+        if time_diff.total_seconds() > 1800:
+            print("[INFO] Half an hour passed while last response.")
+            next_state = None
+        else:
+            print("[INFO] In Allowed time bound.")
     if next_state is None:
-        reply = chatbot.welcome_message()
+        print("[INFO] Welcome Message")
+        reply = chatbot.welcome_state()
         CustomerJourney().post_customer_number(customer_number)
         CustomerJourney().put_states(reply['state'], reply['next_state'], customer_number)
         return respond(reply['message'])
     else:
-        if next_state == "confirm_uploaded_recipt":
-            reply = eval("chatbot." + next_state)
+        print("[INFO] Tree Messages")
+        if next_state == "confirm_uploaded_recipt" or next_state == "welcome_state":
+            reply = eval("chatbot." + next_state)()
+        elif next_state == "process_uploaded_recipt":
+            total_amount = ocr.read_receipt_rule_based(customer_number)
+            print("[INFO] Total Amount Fetched: ", total_amount)
+            reply = eval("chatbot." + next_state)(total_amount)
         else:
             reply = eval("chatbot." + next_state)(message)
+        
+        proactive = reply.get('proactive')
+        if proactive:
+            print("[INFO] Results has fallback call.")
+            next_state = reply['next_state']
+            previous_message = reply['message'] + "\n"
+            if next_state == "confirm_uploaded_recipt" or next_state == "welcome_state":
+                reply = eval("chatbot." + next_state)()
+            elif next_state == "process_uploaded_recipt":
+                total_amount = ocr.read_receipt_rule_based(customer_number)
+                print("[INFO] Total Amount Fetched: ", total_amount)
+                reply = eval("chatbot." + next_state)(total_amount)
+            else:
+                if next_state == "greetings_state":
+                    reply = eval("chatbot." + next_state)("1")
+            reply['message'] = previous_message + reply['message']
         CustomerJourney().put_states(reply['state'], reply['next_state'], customer_number)
         return respond(reply['message'])
 
