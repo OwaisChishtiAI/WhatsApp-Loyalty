@@ -1,40 +1,33 @@
-from flask import Flask, request
-import re
-import easyocr
-import threading
-import os
+from flask.wrappers import Response
+import requests
+from torch.utils import data
 
-app = Flask(__name__)
+BASE_URL = "http://localhost:5000/message"
 
+class Test:
+    def __init__(self, customer_number):
+        self.customer_number = customer_number
+        self.talk = True
 
-def ocr(num):
-    print(num)
-    reader = easyocr.Reader(['ch_sim','en'])
-    total_words = ['total', 'tota', 'amount', 'grandtotal', 'subtotal']
-    image = os.listdir(f'uploads/{num}')[0]
-    print("[INFO] Analyzing Image: ", image)
-    result = reader.readtext(os.path.join(f'uploads/{num}', image))
-    data = [x[1] for x in result]
-    total_index = None
-    for i in range(len(data)):
-        if " ".join(re.findall("[a-zA-Z]+", data[i])).lower().strip() in total_words:
-            total_index = i                
-            break
-    if total_index is not None:
-        try:
-            for j in range(total_index+1, total_index+4):
-                numbers = re.findall(r'\d+(?:[,.]\d+)*', "".join(data[j]))
-                if numbers:
-                    # print(numbers, type(numbers))
-                    print(float("".join(numbers)))
-        except Exception as e:
-            print("[Exception from read_receipt_rule_based]", str(e))
+    def api(self, msg, type):
+        if type == "text":
+            body = {'From' : self.customer_number, 'Body' : msg}
+        elif type == "media":
+            body = {'From' : self.customer_number, 'MediaUrl0' : msg}
+        else:
+            raise(f"Invalid type {type}")
 
-@app.route("/home", methods=['GET'])
-def tes():
-    thr = threading.Thread(target=ocr, args=(['+923132609629']), kwargs={})
-    thr.start()
-    # thr.join()
-    return "OK"
+        response = requests.post(BASE_URL, data=body)
 
-app.run(debug=True)
+        return response.text
+
+    def run(self):
+        while(self.talk):
+            take = input("> ")
+            if 'http' in take:
+                response = self.api(take, 'media')
+            else:
+                response = self.api(take, 'text')
+            print("Bot Says: ", response)
+
+Test('whatsapp:+923132609629').run()

@@ -104,7 +104,9 @@ class ChatBot:
         next_state = "confirm_uploaded_recipt"
 
         if to_do == "1":
-            NotImplementedError()
+            available_points = self.customer_record.get_points_balance(self.customer_number)
+            message = f"How many points you want to redeem from {available_points} points available?"
+            return {'state' : state, 'next_state' : 'redeem_points_state', 'message' : message}
 
         elif to_do == "2":
             message = "Let's do it!\nTake a clear picture of your receipt and upload it."
@@ -114,6 +116,29 @@ class ChatBot:
             message = "What would you like to do?\n1. Rate our services\n2. Checkin to another place\n\
                 3. Go back\n4. Exit"
             return {'state' : state, 'next_state' : 'possible_next_states_state', 'message' : message}
+
+    def redeem_points_state(self, points):
+        state = "redeem_points_state"
+        next_state = "greetings_state"
+
+        if points:
+            try:
+                available_points = self.customer_record.get_points_balance(self.customer_number)
+                if float(points) <= available_points:
+                    available_points = available_points - float(points)
+                    message = f"{points} points redeemed, your points balance is {available_points}"
+                    self.customer_record.put_points_balance(available_points, self.customer_number)
+                    return {'state' : state, 'next_state' : next_state, 'message' : message}
+                else:
+                    message = f"Your redeem points must be less than your balance, you have *{available_points}* balanace points."
+                    return {'state' : state, 'next_state' : state, 'message' : message}
+            except:
+                message = "Invalid amount, please reply with appropiate amount."
+                return {'state' : state, 'next_state' : state, 'message' : message}
+        else:
+            message = "Reply with non-empty amount."
+            return {'state' : state, 'next_state' : state, 'message' : message}
+                
 
     def confirm_uploaded_recipt(self):
         state = 'confirm_uploaded_recipt'
@@ -129,7 +154,7 @@ class ChatBot:
         if int(total_amount) > 0:
             message = f"Congratulations! {total_amount} points have been added to your wallet\n\
                 Your new balance is \
-                    {int(self.customer_record.get_points_balance(self.customer_number)) + int(total_amount)}"
+                    {float(self.customer_record.get_points_balance(self.customer_number)) + float(total_amount)}"
             self.customer_record.put_points_balance(total_amount, self.customer_number)
         else:
             message = "You are not awarded this time, your purchases are not sufficient."

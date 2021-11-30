@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 from flask import Flask, request
 import requests
 import threading
+import sys
 
 from twilio.twiml.messaging_response import MessagingResponse
 from twilio.rest import Client
@@ -14,6 +15,12 @@ from ocr_extractor import OCR
 
 load_dotenv()
 # print(os.environ.get("TWILIO_ACCOUNT_SID"))
+
+is_test = True if sys.argv[1] == 'test' else False
+if is_test:
+    print("Initiating Testing Server...")
+else:
+    print("Initiating Production Server...")
 
 app = Flask(__name__)
 client = Client()
@@ -81,7 +88,7 @@ def reply():
                 from_whatsapp_number = 'whatsapp:+14155238886'
                 to_whatsapp_number = f'whatsapp:{customer_number}'
                 message = client.messages.create(body=reply['message'],
-                                    media_url='https://raw.githubusercontent.com/dianephan/flask_upload_photos/main/UPLOADS/DRAW_THE_OWL_MEME.png',
+                                    media_url='https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.123rf.com%2Fphoto_41726030_redeem-word-on-an-orange-ticket-to-illustrate-special-offer-redemption-or-contest-winning-entry.html&psig=AOvVaw0gJY8GxXeUJkYlUdN-SqFg&ust=1638346684105000&source=images&cd=vfe&ved=0CAsQjRxqFwoTCPiptZ7Tv_QCFQAAAAAdAAAAABAr',
                                     from_=from_whatsapp_number,
                                     to=to_whatsapp_number)
                 print(message.sid)
@@ -107,7 +114,10 @@ def reply():
                     reply = eval("chatbot." + next_state)("1")
             reply['message'] = previous_message + reply['message']
         CustomerJourney().put_states(reply['state'], reply['next_state'], customer_number)
-        return respond(reply['message'])
+        if is_test:
+            return reply['message']
+        else:
+            return respond(reply['message'])
 
 if __name__ == "__main__":
   app.run(debug=True)
