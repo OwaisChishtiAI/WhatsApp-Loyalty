@@ -20,10 +20,10 @@ class OCR:
         if total_index is not None:
             try:
                 for j in range(total_index+1, total_index+4):
-                    numbers = re.findall(r'\d+', " ".join(data[j]))
+                    numbers = re.findall(r'\d+(?:[,.]\d+)*', "".join(data[j]))
                     if numbers:
                         # print(numbers, type(numbers))
-                        return int("".join(numbers))
+                        return float("".join(numbers))
             except Exception as e:
                 print("[Exception from read_receipt_rule_based]", str(e))
                 return 0

@@ -29,9 +29,12 @@ class ChatBot:
             else:
                 message = "What is your good name please?\nPlease reply with your name only.\nThanks"
                 return {'state' : state, 'next_state' : 'registering_customer_name', 'message' : message}
-        else: #MERCHANT
+        elif is_customer == '2': #MERCHANT
             message = "Hi, Please select from following,\n1. Register Store.\n2. Signin into Store."
             return {'state' : state, 'next_state' : 'enrollment_state', 'message' : message}
+        else:
+            message = "invalid Option. Please select\n1. Customer\n2. Merchant\n"
+            return {'state' : state, 'next_state' : state, 'message' : message}
 
     def registering_customer_name(self, customer_name):
         state = "registering_customer_name_state"
@@ -229,7 +232,7 @@ class ChatBot:
                 message = "Wrong username."
                 return {'state' : state, 'next_state' : state, 'message' : message}
         else:
-            message = "Your store name exists but your username does not, it seems like technical error,\n\
+            message = "Your store name exists but your username does not, it seems like someone already has registered,\n\
                 Please contact technical dept. for more assistance. Apologies for inconvinience"
             return {'state' : state, 'next_state' : 'welcome_state', 'message' : message}
 

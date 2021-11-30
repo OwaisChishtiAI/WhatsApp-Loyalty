@@ -3,6 +3,8 @@ import os
 from dotenv import load_dotenv
 from flask import Flask, request
 import requests
+import threading
+
 from twilio.twiml.messaging_response import MessagingResponse
 from twilio.rest import Client
 
@@ -72,15 +74,26 @@ def reply():
         if next_state == "confirm_uploaded_recipt" or next_state == "welcome_state":
             reply = eval("chatbot." + next_state)()
         elif next_state == "process_uploaded_recipt":
-            total_amount = ocr.read_receipt_rule_based(customer_number)
-            print("[INFO] Total Amount Fetched: ", total_amount)
-            reply = eval("chatbot." + next_state)(total_amount)
+            def async_ocr_call(customer_number, chatbot):
+                total_amount = ocr.read_receipt_rule_based(customer_number)
+                print("[INFO] Total Amount Fetched: ", total_amount)
+                reply = eval("chatbot." + next_state)(total_amount)
+                from_whatsapp_number = 'whatsapp:+14155238886'
+                to_whatsapp_number = f'whatsapp:{customer_number}'
+                message = client.messages.create(body=reply['message'],
+                                    media_url='https://raw.githubusercontent.com/dianephan/flask_upload_photos/main/UPLOADS/DRAW_THE_OWL_MEME.png',
+                                    from_=from_whatsapp_number,
+                                    to=to_whatsapp_number)
+                print(message.sid)
+            threading.Thread(target=async_ocr_call, args=([customer_number, chatbot]), kwargs={}).start()
+            reply = {'state' : 'process_uploaded_recipt', 'next_state' : 'greetings_state', 'message' : \
+                'Please wait, we are validating your receipt and shortly we will notify you, please do not send any message meanwhile\nThanks.'}
         else:
             reply = eval("chatbot." + next_state)(message)
         
         proactive = reply.get('proactive')
         if proactive:
-            print("[INFO] Results has fallback call.")
+            print("[INFO] Results has fallback proactive call.")
             next_state = reply['next_state']
             previous_message = reply['message'] + "\n"
             if next_state == "confirm_uploaded_recipt" or next_state == "welcome_state":
