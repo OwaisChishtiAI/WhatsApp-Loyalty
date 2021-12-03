@@ -1,7 +1,8 @@
 from datetime import datetime, time
 import os
 from dotenv import load_dotenv
-from flask import Flask, request
+from flask import Flask, request, jsonify
+from flask_cors import CORS
 import requests
 import threading
 import sys
@@ -11,18 +12,28 @@ from twilio.rest import Client
 
 from customer_journey import CustomerJourney
 from chatbot import ChatBot
-from ocr_extractor import OCR
+if sys.argv[1] != 'dev':
+    from ocr_extractor import OCR
+else:
+    class OCR:
+        def __init__(self) -> None:
+            return None
+    print("DEV SERVER...")
+from dashboard_apis import DashBoardAPI
 
 load_dotenv()
 # print(os.environ.get("TWILIO_ACCOUNT_SID"))
 
-is_test = True if sys.argv[1] == 'test' else False
+is_test = True if sys.argv[1] == 'test' or sys.argv[1] == 'dev' else False
+ip_addr = '0.0.0.0' if sys.argv[2] == 'ip' else '127.0.0.1'
+port = sys.argv[3]
 if is_test:
     print("Initiating Testing Server...")
 else:
     print("Initiating Production Server...")
 
 app = Flask(__name__)
+CORS(app)
 client = Client()
 ocr = OCR()
 
@@ -98,26 +109,48 @@ def reply():
         else:
             reply = eval("chatbot." + next_state)(message)
         
-        proactive = reply.get('proactive')
-        if proactive:
-            print("[INFO] Results has fallback proactive call.")
-            next_state = reply['next_state']
-            previous_message = reply['message'] + "\n"
-            if next_state == "confirm_uploaded_recipt" or next_state == "welcome_state":
-                reply = eval("chatbot." + next_state)()
-            elif next_state == "process_uploaded_recipt":
-                total_amount = ocr.read_receipt_rule_based(customer_number)
-                print("[INFO] Total Amount Fetched: ", total_amount)
-                reply = eval("chatbot." + next_state)(total_amount)
+        if not reply is None:
+            proactive = reply.get('proactive')
+            if proactive:
+                print("[INFO] Results has fallback proactive call.")
+                next_state = reply['next_state']
+                previous_message = reply['message'] + "\n"
+                if next_state == "confirm_uploaded_recipt" or next_state == "welcome_state":
+                    reply = eval("chatbot." + next_state)()
+                elif next_state == "process_uploaded_recipt":
+                    total_amount = ocr.read_receipt_rule_based(customer_number)
+                    print("[INFO] Total Amount Fetched: ", total_amount)
+                    reply = eval("chatbot." + next_state)(total_amount)
+                else:
+                    if next_state == "greetings_state":
+                        reply = eval("chatbot." + next_state)("1")
+                reply['message'] = previous_message + reply['message']
+            CustomerJourney().put_states(reply['state'], reply['next_state'], customer_number)
+            if is_test:
+                return reply['message']
             else:
-                if next_state == "greetings_state":
-                    reply = eval("chatbot." + next_state)("1")
-            reply['message'] = previous_message + reply['message']
-        CustomerJourney().put_states(reply['state'], reply['next_state'], customer_number)
-        if is_test:
-            return reply['message']
-        else:
-            return respond(reply['message'])
+                return respond(reply['message'])
+
+@app.route("/admin_login", methods=['POST'])
+def admin_login_func():
+    data = request.form
+    username, password = data['username'], data['password']
+    admin_id = DashBoardAPI().admin_login_api(username, password)
+
+    return jsonify({'admin_id' : admin_id})
+
+@app.route("/get_admin_customer_info_table_endpoint", methods=['POST'])
+def get_admin_customer_info_table_func():
+    customer_records = DashBoardAPI().get_admin_customer_info_table()
+
+    return jsonify({'customer_records' : customer_records})
+
+@app.route("/put_admin_customer_info_table_endpoint", methods=['POST'])
+def put_admin_customer_info_table_func():
+    record = request.form.to_dict()
+    DashBoardAPI().put_admin_customer_info_table(record)
+
+    return jsonify({'customer_records' : record})
 
 if __name__ == "__main__":
-  app.run(debug=True)
+  app.run(ip_addr,port=port, debug=True)

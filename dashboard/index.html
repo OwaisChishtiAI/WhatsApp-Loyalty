@@ -1,0 +1,84 @@
+<html>
+    <head>
+        <title>
+            AG CAR
+        </title>
+        <link rel="stylesheet" type="text/css" href="assets/css/style.css">
+        <body>
+            <div class="loginbox">
+                <img src="assets/images/logo-inverse-cropped3.jpeg" class="avatar">
+                <h1>Login Here</h1>
+                <form name="creds">
+                    <p>Username</p>
+                    <input type="text" name="user" placeholder="Enter Username">
+                    <p>Password</p>
+                    <input type="password" name="pass" placeholder="Enter Password">
+                    <input type="button" name="" value="Login" onclick="validateForm()">
+                    <a href="#">Forget Password?</a><br>
+                    <a href="#">Don't have account yet?</a>
+                </form>
+            </div>
+        </body>
+    </head>
+    <script type="text/javascript" src="./assets/scripts/ip_addr.js"></script>
+    <script>
+        function validateForm() {
+        var x = document.forms["creds"]["user"].value;
+        var username = document.forms["creds"]["user"].value;
+        var password = document.forms["creds"]["pass"].value;
+        if (x == "" || password == "") {
+            alert("Username or password cannot be empty.");
+            var hist = useHistory();
+            console.log(hist);
+            return false;
+        }
+        else{
+            try{
+                const formData = new FormData();
+                xhr = new XMLHttpRequest();
+                formData.append('username', username);
+                formData.append('password', password);
+                xhr.open( 'POST', ip_addr + '/admin_login', true );
+                xhr.send( formData );
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState === 4) {
+                        var results = xhr.response;  
+                        console.log("REP: " + results);
+                        results = JSON.parse(results);
+                        // alert(results['status']);
+                        if(results['admin_id'] != 'None'){
+                            window.sessionStorage;
+                            sessionStorage.setItem("agent_id", username);
+                            window.location = 'main_dashboard.html';
+                        }
+                        else{
+                            alert("Username or password is incorrect.");
+                            return false
+                        }
+                    }
+                    // else{
+                    //     alert("Server not responding, try later.");
+                    //     return false
+                    // }
+                };
+            }
+            catch(err){
+                console.log("TRY ERROR " + err);
+                // alert("Server not responding, try later.");
+                return false
+            }
+        }
+        
+        
+        // if(username == "admin" && password == "admin"){
+        //     // location.href = "file:///C:/Users/owais/Documents/food_court_login_form-web_Free12-09-2017_25706885/web/Login%20Form/creditCard.html"
+        //     // document.write("<a href='/creditCard.html'")
+        //     return true;
+        // }
+        // else{
+        //     alert("Wrong Username or Password")
+        //     return false;
+        // }
+        }
+    </script>
+</html>
