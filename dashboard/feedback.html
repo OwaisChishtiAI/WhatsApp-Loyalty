@@ -10,6 +10,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no" />
     <meta name="description" content="This is an example dashboard created using build-in elements and components.">
     <meta name="msapplication-tap-highlight" content="no">
+    
     <script src="https://code.jquery.com/jquery-1.9.1.min.js"></script>
     <script>
     $( document ).ready(function() {
@@ -96,7 +97,7 @@
                     <div class="header-btn-lg pr-0">
                         <div class="widget-content p-0">
                             <div class="widget-content-wrapper">
-                               
+                              
                                 <div class="widget-content-right header-user-info ml-3">
                                     <button type="button" class="btn btn-primary btn-sm" onclick="logout()">
                                         <i class="fa text-red fa-stop pr-1 pl-1"></i>
@@ -426,13 +427,13 @@
                             <ul class="vertical-nav-menu">
                                 <li class="app-sidebar__heading">Dashboards</li>
                                 <li>
-                                    <a href="main_dashboard.html" class="mm-active">
+                                    <a href="main_dashboard.html">
                                         <i class="metismenu-icon pe-7s-rocket"></i>
                                         Customer Info Management
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="feedback.html">
+                                    <a href="feedback.html" class="mm-active">
                                         <i class="metismenu-icon pe-7s-display2"></i>
                                         Customer FeedBacks
                                     </a>
@@ -443,7 +444,7 @@
                                         Merchant Management
                                     </a>
                                 </li>
-                                
+                               
                             </ul>
                         </div>
                     </div>
@@ -452,231 +453,96 @@
                         <div class="app-page-title">
                             <div class="page-title-wrapper">
                                 <div class="page-title-heading">
-                                    <!-- <div class="page-title-icon"> -->
-                                        <!-- class="pe-7s-car icon-gradient bg-mean-fruit" -->
-                                        <!-- <i> -->
                                             <img  src="assets/images/logo-inverse-cropped3.jpeg" alt="">
-                                        <!-- </i> -->
-                                    <!-- </div> -->
                                     <div>Car Shipping Sales
                                         <div class="page-title-subheading">Sales Analytics Management System
                                         </div>
                                     </div>
                                 </div>
-                                <div class="page-title-actions">
-                                    <!-- <button type="button" data-toggle="tooltip" title="Example Tooltip" data-placement="bottom" class="btn-shadow mr-3 btn btn-dark">
-                                        <i class="fa fa-star"></i>
-                                    </button> -->
-                                    <div class="d-inline-block dropdown">
-                                        <!-- <button type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="btn-shadow dropdown-toggle btn btn-info">
-                                            <span class="btn-icon-wrapper pr-2 opacity-7">
-                                                <i class="fa fa-business-time fa-w-20"></i>
-                                            </span>
-                                            Buttons
-                                        </button> -->
-                                        <div tabindex="-1" role="menu" aria-hidden="true" class="dropdown-menu dropdown-menu-right">
-                                            <ul class="nav flex-column">
-                                                <li class="nav-item">
-                                                    <a href="javascript:void(0);" class="nav-link">
-                                                        <i class="nav-link-icon lnr-inbox"></i>
-                                                        <span>
-                                                            Inbox
-                                                        </span>
-                                                        <div class="ml-auto badge badge-pill badge-secondary">86</div>
-                                                    </a>
-                                                </li>
-                                                <li class="nav-item">
-                                                    <a href="javascript:void(0);" class="nav-link">
-                                                        <i class="nav-link-icon lnr-book"></i>
-                                                        <span>
-                                                            Book
-                                                        </span>
-                                                        <div class="ml-auto badge badge-pill badge-danger">5</div>
-                                                    </a>
-                                                </li>
-                                                <li class="nav-item">
-                                                    <a href="javascript:void(0);" class="nav-link">
-                                                        <i class="nav-link-icon lnr-picture"></i>
-                                                        <span>
-                                                            Picture
-                                                        </span>
-                                                    </a>
-                                                </li>
-                                                <li class="nav-item">
-                                                    <a disabled href="javascript:void(0);" class="nav-link disabled">
-                                                        <i class="nav-link-icon lnr-file-empty"></i>
-                                                        <span>
-                                                            File Disabled
-                                                        </span>
-                                                    </a>
-                                                </li>
-                                            </ul>
+                                   </div>
+                        </div>
+                        <script type="text/javascript" src="./assets/scripts/ip_addr.js"></script>
+                        <script>
+                            var stars = {'1' : '😍', "2" : '😃', '3' : '😐','4' : '😔', '5' : '😤'};
+                            var timesheets_xhr = new XMLHttpRequest();
+                            timesheets_xhr.onreadystatechange = function() {
+                                if (timesheets_xhr.readyState === 4) {
+                                    console.log("Data Fetched");
+                                    var results = timesheets_xhr.response;  
+                                    results = JSON.parse(results);
+                                    results = results.customer_ratings;
+                                    console.log("RESULTS: ", results);
+                                    for(let i = 0; i < results.length; i++){
+                                        var section = document.getElementById('parent-row');
+                                        var row = document.createElement('div');
+                                        row.classList.add("row");
+                                        var col = document.createElement('div');
+                                        col.classList.add("col-md-10");
+                                        var main_card = document.createElement('div');
+                                        main_card.classList.add('main-card', 'mb-3', 'card');
+                                        var card_body = document.createElement('div');
+                                        card_body.classList.add('card-body');
+                                        var card_title = document.createElement('h5');
+                                        card_title.classList.add('card-title');
+                                        var smily_span = document.createElement('span');
+                                        smily_span.style.fontSize = '100px';
+                                        smily_span.innerHTML = stars[results[i].stars];
+                                        var col2 = document.createElement('div');
+                                        col.classList.add("col-md-10", "mb-3");
+                                        var h3 = document.createElement('h3');
+                                        h3.innerHTML = results[i].ratings;
+                                        var hr = document.createElement('hr');
+                                        var given_by_label = document.createElement('label');
+                                        given_by_label.innerHTML = "Given By: &nbsp";
+                                        var given_by_value_label = document.createElement('label');
+                                        given_by_value_label.innerHTML = results[i].customer_number.bold();
+                                        var given_on_label = document.createElement('label');
+                                        given_on_label.innerHTML = "Given On: &nbsp";
+                                        var given_on_value_label = document.createElement('label');
+                                        given_on_value_label.innerHTML = results[i].created_at.bold();
+                                        col2.appendChild(h3);
+                                        col2.appendChild(hr);
+                                        col2.appendChild(given_by_label);
+                                        col2.appendChild(given_by_value_label);
+                                        col2.appendChild(document.createElement('br'));
+                                        col2.appendChild(given_on_label);
+                                        col2.appendChild(given_on_value_label);
+                                        card_title.appendChild(smily_span);
+                                        card_body.appendChild(card_title);
+                                        card_body.appendChild(col2);
+                                        main_card.appendChild(card_body);
+                                        col.appendChild(main_card);
+                                        row.appendChild(col);
+                                        section.appendChild(row);
+                                    }
+                                }
+                            }
+                            timesheets_xhr.open('POST', ip_addr + '/get_admin_customer_ratings_table_endpoint', true);
+                            timesheets_xhr.send();
+                        </script>
+                        <div class="row" id='parent-row'>
+<!--                           
+                            <div class="row">
+                                <div class="col-md-10">
+                                    <div class="main-card mb-3 card">
+                                        <div class="card-body">
+                                            <h5 class="card-title"><span style='font-size:100px;'>😃</span></h5>
+                                            <div class="col-md-10 mb-3">
+                                                <h3>Love Your Services</h3>
+                                                <hr>
+                                                <label>Given By:</label>
+                                                <label><b>+923132609629</b></label>
+                                                <label>Gievn On:</label>
+                                                <label><b>DateTime</b></label>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>    
-                            </div>
-                        </div>            <div class="row">
-                            
-                        </div>
-                        <div class="row">
-                            
-                            <div class="col-md-8">
-                                <div class="main-card mb-3 card">
-                                    <div class="card-body"><h5 class="card-title">Customer Records</h5>
-                                        <input type="date" id="from_date" name="from_date">
-                                        <input type="date" id="to_date" name="to_date">
-                                        <button class="btn btn-primary" onclick="populateOverallOverview()">Filter</button>
-                                        <table id="populateTable" class="mb-0 table table-bordered">
-                                            <thead>
-                                                <tr>
-                                                    <th>#</th>
-                                                    <th>Customer ID</th>
-                                                    <th>Customer Number</th>
-                                                    <th>Customer Name</th>
-                                                    <th>Customer Points</th>
-                                                    <th>Customer Pin Places</th>
-                                                    <th>Actions</th>
-                                                </tr>
-                                                </thead>
-                                        </table>
-                                    </div>
-                                    <button class="mb-2 mr-2 btn btn-primary" onclick="populateOverallOverview()">Refresh
-                                    </button>
                                 </div>
-                                
-                            </div>
-
-                            <script>
-                               
-                                function populateOverallOverview(result){
-                                    var table = document.getElementById("populateTable");
-                                    
-                                    var xhr = new XMLHttpRequest();
-                                    xhr.onreadystatechange = function() {
-                                        if (xhr.readyState === 4) {
-                                        // callback(xhr.response);
-                                            console.log("Data Fetched");
-                                            var results = xhr.response;  
-                                            results = JSON.parse(results);
-                                            results = results.customer_records;
-                                            console.log("RESULTS: ", results);
-
-                                            function addCell(tr, text, last=false, btn_id=null) {
-                                                function ViewClick(event){
-                                                console.log(event.target.id + ' was clicked'); //modal_timestamp
-                                                // factionName = results[event.target.id-1]['timestamp'];
-                                                // console.log(factionName);
-                                                // document.getElementById('modal_timestamp').innerHTML = factionName;
-                                                var orig_keys = {"modal_customer_id":"Customer ID", "modal_customer_number":"Customer Number", "modal_customer_name":"Customer Name", "modal_customer_points":"Customer Points", "modal_places":"Customer Pin Places"}
-                                                Object.keys(results[event.target.id - 1]).forEach(function(key) {
-                                                    document.getElementById('modal_' + key).innerHTML = orig_keys['modal_' + key].bold() + ": " + results[event.target.id - 1][key];
-                                                    })
-                                                }
-
-                                                function EditClick(event){
-                                                console.log(event.target.id + ' was clicked'); //modal_timestamp
-                                                Object.keys(results[event.target.id - 1]).forEach(function(key) {
-                                                    document.getElementById('emodal_' + key).value = results[event.target.id - 1][key];
-                                                    })
-                                                }
-
-                                                function DeleteClick(event){
-                                                    var del = confirm("Are you sure, you want to delete this?")
-                                                    if(del){
-                                                        console.log("DELETE" + event.target.id)
-                                                        var xhr2 = new XMLHttpRequest();
-                                                        xhr2.open( 'POST', ip_addr + '/delete_admin_customer_info_table_endpoint', true );
-                                                        xhr2.onreadystatechange = function ( response ) {};
-                                                        console.log("customer_id " + results[event.target.id - 1]['customer_id']);
-                                                        customer_id_form = new FormData();
-                                                        customer_id_form.append('customer_id', results[event.target.id - 1]['customer_id']);
-                                                        var agent_id = sessionStorage.getItem("agent_id");
-                                                        xhr2.send(customer_id_form);
-                                                    }
-                                                    else{
-                                                        console.log("NOT DELETE" + event.target.id)
-                                                    }
-                                                }
-
-                                                if (last == true) {
-                                                    var btn = document.createElement('input');
-                                                    var btn2 = document.createElement('input');
-                                                    var btn3 = document.createElement('input');
-
-                                                    var td = tr.insertCell();
-                                                    btn.id = btn_id
-                                                    btn.type = "button";
-                                                    btn.className = "mb-2 mr-2 btn-transition btn btn-outline-primary";
-                                                    btn.value = "View";
-                                                    btn.dataset.target = "#exampleModalLong";
-                                                    btn.dataset.toggle = "modal";
-                                                    btn.onclick = ViewClick;
-                                                    td.appendChild(btn);
-
-                                                    btn2.type = "button";
-                                                    btn2.id = btn_id
-                                                    btn2.className = "mb-2 mr-2 btn-transition btn btn-outline-warning";
-                                                    btn2.value = "Edit";
-                                                    btn2.dataset.target = "#editmodal";
-                                                    btn2.dataset.toggle = "modal";
-                                                    btn2.onclick = EditClick;
-                                                    td.appendChild(btn2);
-
-                                                    btn3.type = "button";
-                                                    btn3.id = btn_id
-                                                    btn3.className = "mb-2 mr-2 btn-transition btn btn-outline-danger";
-                                                    btn3.value = "Delete";
-                                                    btn3.onclick = DeleteClick;
-                                                    td.appendChild(btn3);
-
-
-                                                    return td;
-                                                }
-                                                else{
-                                                    var td = tr.insertCell();
-                                                    td.textContent = text;
-                                                    return td;
-                                                }
-                                            }  
-
-                                            var i = 1;
-                                            var Table = document.getElementById("populateTable");
-                                            Table.innerHTML = "<thead><tr><th>#</th><th>Customer ID</th><th>Customer Number</th><th>Customer Name</th><th>Customer Points</th><th>Customer Pin Places</th><th>Actions</th></tr></thead>";
-                                            // var table_cols = ["TimeStamp", "Agent Name", "Order ID", "Actions"]
-                                            // for(var a = 0; a < 4; a++){
-
-                                            // }
-                                            for(var j = 0; j < results.length; j++){
-                                                var row = table.insertRow();
-                                                var item = results[j];
-                                                addCell(row, i);
-                                                addCell(row, item.customer_id);
-                                                addCell(row, item.customer_number);
-                                                addCell(row, item.customer_name);
-                                                addCell(row, item.customer_points);
-                                                addCell(row, item.places);
-                                                addCell(row, "", last=true, btn_id=i);
-                                                i = i + 1;
-                                                }
-                                                
-                                        }
-                                    }
-                                    
-                                    xhr.open('POST', ip_addr + '/get_admin_customer_info_table_endpoint', true);
-                                    xhr.send('');
-                                    
-                                    // console.log(results);                                    
-                                }
-                            </script>
-
-
+                            </div> -->
 
                         </div>
-                        <div class="row">
-                           
-                        
-                    </div>
-                      </div>
+                       
+                </div>
                 <script src="http://maps.google.com/maps/api/js?sensor=true"></script>
         </div>
     </div>
@@ -696,11 +562,24 @@
                 </button>
             </div>
             <div class="modal-body">
-                <p id="modal_customer_id"></p>
-                <p id="modal_customer_number"></p>
-                <p id="modal_customer_name"></p>
-                <p id="modal_customer_points"></p>
-                <p id="modal_places"></p>
+                <p id="modal_timestamp"></p>
+                <p id="modal_agent_name"></p>
+                <p id="modal_order_id"></p>
+                <p id="modal_client_name"></p>
+                <p id="modal_contact"></p>
+                <p id="modal_email_id"></p>
+                <p id="modal_total_tariff"></p>
+                <p id="modal_deposit"></p>
+                <p id="modal_profit"></p>
+                <p id="modal_driver_pay"></p>
+                <p id="modal_payment_method"></p>
+                <p id="modal_pickup_date"></p>
+                <p id="modal_no_of_vehicles"></p>
+                <p id="modal_pickup"></p>
+                <p id="modal_booking_status"></p>
+                <p id="modal_agreement"></p>
+                <p id="modal_agent_notes"></p>
+                <p id="modal_jt_link"></p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -727,15 +606,16 @@
                 function update_changes(){
                     var data = document.getElementById("form-2");
                     var formData = new FormData();
-                    var names = ['customer_id', 'customer_number', 'customer_name', 'customer_points', 'places']
+                    var names = ['timestamp', 'agent_name', 'order_id', 'client_name', 'contact', 'email_id', 'total_tariff', 'deposit', 'profit', 'driver_pay', 'payment_method', 'pickup_date', 'no_of_vehicles', 'pickup', 'booking_status', 'agreement', 'agent_notes', 'jt_link']
                     // alert(data['agent_name'].value);
                     for(var b=0;b<names.length;b++){
                         formData.append(names[b], data[names[b]].value)
                     }
-                    xhr_update = new XMLHttpRequest();
-                    xhr_update.open( 'POST', ip_addr + "/put_admin_customer_info_table_endpoint", true );
-                    xhr_update.onreadystatechange = function ( response ) {};
-                    xhr_update.send( formData );
+                    xhr = new XMLHttpRequest();
+            
+                    xhr.open( 'POST', ip_addr + "/update", true );
+                    xhr.onreadystatechange = function ( response ) {};
+                    xhr.send( formData );
                 }
             </script>
 
@@ -743,8 +623,8 @@
                 <form id="form-2" class="needs-validation" novalidate > <!--action="http://localhost:5000/write" method="post"-->
                     <div class="form-row">
                         <div class="col-md-4 mb-3">
-                            <label for="validationCustom01">Customer ID</label>
-                            <input type="text" name="customer_id" class="form-control" id="emodal_customer_id" placeholder="customer_id" value="" required disabled>
+                            <label for="validationCustom01">Timestamp</label>
+                            <input type="text" name="timestamp" class="form-control" id="emodal_timestamp" placeholder="Timestamp" value="" required>
                             <!-- <script>
                                 var datetime = new Date().toLocaleString();
                                 document.getElementById("timestamp").value = datetime;
@@ -754,15 +634,15 @@
                             </div>
                         </div>
                         <div class="col-md-4 mb-3">
-                            <label for="validationCustom02">Customer Number</label>
-                            <input type="text" name="customer_number" class="form-control" id="emodal_customer_number" placeholder="Customer Number" value="" required>
+                            <label for="validationCustom02">Agent Name</label>
+                            <input type="text" name="agent_name" class="form-control" id="emodal_agent_name" placeholder="Agent Name" value="" required>
                             <div class="valid-feedback">
                                 Looks good!
                             </div>
                         </div>
                         <div class="col-md-4 mb-3">
-                            <label for="validationCustom02">Customer Name</label>
-                            <input type="text" name="customer_name" class="form-control" id="emodal_customer_name" placeholder="Customer Name" value="" >
+                            <label for="validationCustom02">Order ID</label>
+                            <input type="text" name="order_id" class="form-control" id="emodal_order_id" placeholder="Order ID" value="" disabled>
                             <div class="valid-feedback">
                                 Looks good!
                             </div>
@@ -770,22 +650,119 @@
                     </div>
                     <div class="form-row">
                         <div class="col-md-4 mb-3">
-                            <label for="validationCustom01">Customer Points</label>
-                            <input type="text" name="customer_points" class="form-control" id="emodal_customer_points" placeholder="Client Name" value=""required>
+                            <label for="validationCustom01">Client Name</label>
+                            <input type="text" name="client_name" class="form-control" id="emodal_client_name" placeholder="Client Name" value=""required>
                             <div class="valid-feedback">
                                 Looks good!
                             </div>
                         </div>
                         <div class="col-md-4 mb-3">
-                            <label for="validationCustom02">Customer Pin Places</label>
-                            <input type="text" name="places" class="form-control" id="emodal_places" placeholder="Customer Pin Places" value="" required>
+                            <label for="validationCustom02">Contact</label>
+                            <input type="text" name="contact" class="form-control" id="emodal_contact" placeholder="Contact" value="" required>
                             <div class="valid-feedback">
                                 Looks good!
                             </div>
                         </div>
-                        
+                        <div class="col-md-4 mb-3">
+                            <label for="validationCustom02">Email-ID</label>
+                            <input type="text" name="email_id" class="form-control" id="emodal_email_id" placeholder="Email-ID" value="" required>
+                            <div class="valid-feedback">
+                                Looks good!
+                            </div>
+                        </div>
                     </div>
-                    
+                    <div class="form-row">
+                        <div class="col-md-4 mb-3">
+                            <label for="validationCustom01">Total Tariff</label>
+                            <input type="text" name="total_tariff" class="form-control" id="emodal_total_tariff" placeholder="Total Tariff" value="" required>
+                            <div class="valid-feedback">
+                                Looks good!
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="validationCustom02">Deposit</label>
+                            <input type="text" name="deposit" class="form-control" id="emodal_deposit" placeholder="Deposit" value="" required>
+                            <div class="valid-feedback">
+                                Looks good!
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="validationCustom02">Profit</label>
+                            <input type="text" name="profit" class="form-control" id="emodal_profit" placeholder="Profit" value="" required>
+                            <div class="valid-feedback">
+                                Looks good!
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="col-md-4 mb-3">
+                            <label for="validationCustom01">Driver Pay</label>
+                            <input type="text" name="driver_pay" class="form-control" id="emodal_driver_pay" placeholder="Driver Pay" value="" required>
+                            <div class="valid-feedback">
+                                Looks good!
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="validationCustom02">Payment Method</label>
+                            <input type="text" name="payment_method" class="form-control" id="emodal_payment_method" placeholder="Payment Method" value="" required>
+                            <div class="valid-feedback">
+                                Looks good!
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="validationCustom02">Pickup Date</label>
+                            <input type="text" name="pickup_date" class="form-control" id="emodal_pickup_date" placeholder="Pickup Date" value="" required>
+                            <div class="valid-feedback">
+                                Looks good!
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="col-md-4 mb-3">
+                            <label for="validationCustom01">Number of Vehicle</label>
+                            <input type="text" name="no_of_vehicles" class="form-control" id="emodal_no_of_vehicles" placeholder="Number of Vehicle" value="" required>
+                            <div class="valid-feedback">
+                                Looks good!
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="validationCustom02">Pickup</label>
+                            <input type="text" name="pickup" class="form-control" id="emodal_pickup" placeholder="Pickup" value="" required>
+                            <div class="valid-feedback">
+                                Looks good!
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="validationCustom02">Booking Status</label>
+                            <input type="text" name="booking_status" class="form-control" id="emodal_booking_status" placeholder="Booking Status" value="" required>
+                            <div class="valid-feedback">
+                                Looks good!
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="col-md-4 mb-3">
+                            <label for="validationCustom01">Agreement</label>
+                            <input type="text" name="agreement" class="form-control" id="emodal_agreement" placeholder="Agreement" value="" required>
+                            <div class="valid-feedback">
+                                Looks good!
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="validationCustom02">Agent Notes</label>
+                            <input type="text" name="agent_notes" class="form-control" id="emodal_agent_notes" placeholder="Agent Notes" value="" required>
+                            <div class="valid-feedback">
+                                Looks good!
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="validationCustom02">JT Link</label>
+                            <input type="text" name="jt_link" class="form-control" id="emodal_jt_link" placeholder="JT Link" value="" required>
+                            <div class="valid-feedback">
+                                Looks good!
+                            </div>
+                        </div>
+                    </div>
                     <button onclick="update_changes()" class="btn btn-primary" type="submit">Save Changes</button>
                 </form>
                 

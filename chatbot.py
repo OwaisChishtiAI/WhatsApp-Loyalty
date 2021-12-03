@@ -182,7 +182,7 @@ class ChatBot:
         next_state = 'greetings_state'
 
         rating = self.ratings[stars]
-        CustomerRatings().post_rating(rating, self.customer_number)
+        CustomerRatings().post_rating(rating, self.customer_number, stars)
         message = "Thank You, your feedback has been registered, we will furnish our services as per your feedback."
         return {'state' : state, 'next_state' : next_state, 'message' : message, 'proactive' : True}
 

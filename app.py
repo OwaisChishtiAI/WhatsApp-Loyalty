@@ -152,5 +152,24 @@ def put_admin_customer_info_table_func():
 
     return jsonify({'customer_records' : record})
 
+@app.route("/delete_admin_customer_info_table_endpoint", methods=['POST'])
+def delete_admin_customer_info_table_func():
+    record = request.form.to_dict()
+    DashBoardAPI().delete_admin_customer_info_table(record['customer_id'])
+
+    return jsonify({'customer_records' : record})
+
+@app.route("/get_admin_customer_ratings_table_endpoint", methods=['POST'])
+def get_admin_customer_ratings_table_func():
+    customer_ratings = DashBoardAPI().get_admin_customer_ratings_table()
+
+    return jsonify({'customer_ratings' : customer_ratings})
+
+@app.route("/get_admin_merchant_creds_table_endpoint", methods=['POST'])
+def get_admin_merchant_creds_table_func():
+    merchant_info = DashBoardAPI().get_admin_merchant_creds_table()
+
+    return jsonify({'merchant_info' : merchant_info})
+
 if __name__ == "__main__":
   app.run(ip_addr,port=port, debug=True)

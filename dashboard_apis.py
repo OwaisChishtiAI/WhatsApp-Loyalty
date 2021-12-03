@@ -57,4 +57,50 @@ class DashBoardAPI(Connect):
         print("[INFO] UPDATE Customer Info Records", record)
         self.close()
 
-# DashBoardAPI().admin_customer_info_table()        
+    def delete_admin_customer_info_table(self, record_id):
+        cursor, db = self.pointer()
+        sql = f"DELETE FROM ly_customer_info WHERE customer_id='{record_id}'"
+        cursor.execute(sql)
+        db.commit()
+        print("[INFO] DELETE Customer Info Record", record_id)
+        self.close()
+
+    def get_admin_customer_ratings_table(self):
+        all_records = []
+        cursor = self.pointer()[0]
+        sql = f"SELECT *  FROM ly_customer_ratings"
+        cursor.execute(sql)
+        ratings_records = cursor.fetchall()
+        print("[INFO] GET Customer Ratings Records", ratings_records)
+        self.close()
+
+        for i in range(len(ratings_records)):
+            individual_record = {}
+            individual_record['customer_number'] = ratings_records[i][1]
+            individual_record['ratings'] = ratings_records[i][2]
+            individual_record['created_at'] = str(ratings_records[i][3])
+            individual_record['stars'] = ratings_records[i][4]
+            all_records.append(individual_record)
+
+        return all_records
+
+    def get_admin_merchant_creds_table(self):
+        all_records = []
+        cursor = self.pointer()[0]
+        sql = f"SELECT place_name, merchant_number, points_offer  FROM ly_merchant_creds"
+        cursor.execute(sql)
+        merchant_info = cursor.fetchall()
+        print("[INFO] GET Merchant Info", merchant_info)
+        self.close()
+
+        for i in range(len(merchant_info)):
+            individual_record = {}
+            individual_record['place_name'] = merchant_info[i][0]
+            individual_record['merchant_number'] = merchant_info[i][1]
+            individual_record['points_offer'] = merchant_info[i][2]
+            all_records.append(individual_record)
+
+        return all_records
+
+
+# print(DashBoardAPI().get_admin_merchant_creds_table())

@@ -426,7 +426,7 @@
                             <ul class="vertical-nav-menu">
                                 <li class="app-sidebar__heading">Dashboards</li>
                                 <li>
-                                    <a href="main_dashboard.html" class="mm-active">
+                                    <a href="main_dashboard.html" >
                                         <i class="metismenu-icon pe-7s-rocket"></i>
                                         Customer Info Management
                                     </a>
@@ -438,7 +438,7 @@
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="merchant.html">
+                                    <a href="merchant.html" class="mm-active">
                                         <i class="metismenu-icon pe-7s-graph2"></i>
                                         Merchant Management
                                     </a>
@@ -530,12 +530,9 @@
                                             <thead>
                                                 <tr>
                                                     <th>#</th>
-                                                    <th>Customer ID</th>
-                                                    <th>Customer Number</th>
-                                                    <th>Customer Name</th>
-                                                    <th>Customer Points</th>
-                                                    <th>Customer Pin Places</th>
-                                                    <th>Actions</th>
+                                                    <th>Merchant Place Name</th>
+                                                    <th>Merchant Number</th>
+                                                    <th>Points Offer / 1 USD Purchase</th>
                                                 </tr>
                                                 </thead>
                                         </table>
@@ -558,7 +555,7 @@
                                             console.log("Data Fetched");
                                             var results = xhr.response;  
                                             results = JSON.parse(results);
-                                            results = results.customer_records;
+                                            results = results.merchant_info;
                                             console.log("RESULTS: ", results);
 
                                             function addCell(tr, text, last=false, btn_id=null) {
@@ -641,7 +638,7 @@
 
                                             var i = 1;
                                             var Table = document.getElementById("populateTable");
-                                            Table.innerHTML = "<thead><tr><th>#</th><th>Customer ID</th><th>Customer Number</th><th>Customer Name</th><th>Customer Points</th><th>Customer Pin Places</th><th>Actions</th></tr></thead>";
+                                            Table.innerHTML = "<thead><tr><th>#</th><th>Merchant Place Name</th><th>Merchant Number</th><th>Points Offer / 1 USD Purchase</th></tr></thead>";
                                             // var table_cols = ["TimeStamp", "Agent Name", "Order ID", "Actions"]
                                             // for(var a = 0; a < 4; a++){
 
@@ -650,19 +647,15 @@
                                                 var row = table.insertRow();
                                                 var item = results[j];
                                                 addCell(row, i);
-                                                addCell(row, item.customer_id);
-                                                addCell(row, item.customer_number);
-                                                addCell(row, item.customer_name);
-                                                addCell(row, item.customer_points);
-                                                addCell(row, item.places);
-                                                addCell(row, "", last=true, btn_id=i);
-                                                i = i + 1;
+                                                addCell(row, item.place_name);
+                                                addCell(row, item.merchant_number);
+                                                addCell(row, item.points_offer);
                                                 }
                                                 
                                         }
                                     }
                                     
-                                    xhr.open('POST', ip_addr + '/get_admin_customer_info_table_endpoint', true);
+                                    xhr.open('POST', ip_addr + '/get_admin_merchant_creds_table_endpoint', true);
                                     xhr.send('');
                                     
                                     // console.log(results);                                    

@@ -38,11 +38,11 @@ class CustomerJourney(Connect):
         self.close()
 
 class CustomerRatings(Connect):
-    def post_rating(self, rating, customer_number):
+    def post_rating(self, rating, customer_number, stars):
         cursor, db = self.pointer()
-        sql = "INSERT INTO ly_customer_ratings (customer_number, ratings, created_at)\
-            VALUES (%s, %s, %s)"
-        cursor.execute(sql, (customer_number, rating, datetime.now()))
+        sql = "INSERT INTO ly_customer_ratings (customer_number, ratings, created_at, stars)\
+            VALUES (%s, %s, %s, %s)"
+        cursor.execute(sql, (customer_number, rating, datetime.now(), stars))
         db.commit()
         print("[INFO] POST Customer Rating")
         self.close()
