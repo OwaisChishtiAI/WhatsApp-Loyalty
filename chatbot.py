@@ -15,7 +15,7 @@ class ChatBot:
     def welcome_state(self):
         state = "welcome_state"
         next_state = "greetings_state"
-        message = "Hi.\nGood day.\n1. Customer\n2. Merchant\nPlease reply with 1,2,3.. for respective option."
+        message = "Hi.\nGood day.\n1. Customer\n2. Merchant\nPlease reply with 1,2,3.. for respective option.\nAt any point of time, if you want to restart conversation reply with *hi*"
         return {'state' : state, 'next_state' : next_state, 'message' : message}
 
     def greetings_state(self, is_customer): # Name is required at this method
@@ -41,8 +41,7 @@ class ChatBot:
         next_state = "greetings_state"
         self.customer_name = customer_name
         self.customer_record.post_customer_name(customer_name, self.customer_number)
-        return {'state' : state, 'next_state' : next_state, 'message' : f'Hi {customer_name}, Good Day!\n\
-            1. Customer\n2. Merchant\nPlease reply with 1,2,3.. for respective option.'}
+        return {'state' : state, 'next_state' : next_state, 'message' : f'Hi {customer_name}, Good Day!\n1. Customer\n2. Merchant\nPlease reply with 1,2,3.. for respective option.'}
 
     def places_state(self, place_option):
         state = "places_state"
@@ -152,9 +151,7 @@ class ChatBot:
         next_state = 'greetings_state'
 
         if int(total_amount) > 0:
-            message = f"Congratulations! {total_amount} points have been added to your wallet\n\
-                Your new balance is \
-                    {float(self.customer_record.get_points_balance(self.customer_number)) + float(total_amount)}"
+            message = f"Congratulations! {total_amount} points have been added to your wallet\nYour new balance is {float(self.customer_record.get_points_balance(self.customer_number)) + float(total_amount)}"
             self.customer_record.put_points_balance(total_amount, self.customer_number)
         else:
             message = "You are not awarded this time, your purchases are not sufficient."
@@ -257,8 +254,7 @@ class ChatBot:
                 message = "Wrong username."
                 return {'state' : state, 'next_state' : state, 'message' : message}
         else:
-            message = "Your store name exists but your username does not, it seems like someone already has registered,\n\
-                Please contact technical dept. for more assistance. Apologies for inconvinience"
+            message = "Your store name exists but your username does not, it seems like someone already has registered,\nPlease contact technical dept. for more assistance. Apologies for inconvinience"
             return {'state' : state, 'next_state' : 'welcome_state', 'message' : message}
 
     def register_password_state(self, password):
@@ -267,9 +263,7 @@ class ChatBot:
 
         if password:
             self.merchant.put_password(password, self.customer_number)
-            message = "Welcome, your store has been registered.\nYou can now add points for customers\n\
-                How many points you want to give to customers for each *1 USD* purchase?\n\
-                    Please reply with numbers e.g. 1, 5, 10, etc."
+            message = "Welcome, your store has been registered.\nYou can now add points for customers\nHow many points you want to give to customers for each *1 USD* purchase?\nPlease reply with numbers e.g. 1, 5, 10, etc."
             return {'state' : state, 'next_state' : next_state, 'message' : message}
         else:
             message = "password cannot be empty, please re-enter valid strong password"
@@ -283,11 +277,7 @@ class ChatBot:
         if stored_password:
             if stored_password == password:
                 points_offer = self.merchant.get_points(self.customer_number)
-                message = f"Welcome, you are now logged in.\nYou can now add points for customers\n\
-                How many points you want to give to customers for each *1 USD* purchase?\n\
-                    Please reply with numbers e.g. 1, 5, 10, etc.\n\
-                        Previously you offered *{points_offer}* for each 1 USD purchase, enter same\n\
-                            points if you don't want to change points offerings."
+                message = f"Welcome, you are now logged in.\nYou can now add points for customers\nHow many points you want to give to customers for each *1 USD* purchase?\nPlease reply with numbers e.g. 1, 5, 10, etc.\nPreviously you offered *{points_offer}* for each 1 USD purchase, enter same\npoints if you don't want to change points offerings."
                 return {'state' : state, 'next_state' : next_state, 'message' : message}
             else:
                 message = "Wrong password."
@@ -303,8 +293,7 @@ class ChatBot:
 
         if points.isdigit():
             self.merchant.put_points(int(points), self.customer_number)
-            message = f"Thanks, your points have been saved, for each dollar purchase cutomer will get\n\
-                {points} points, You're now *Logged out* from current session, but you can signin any time, Thanks."
+            message = f"Thanks, your points have been saved, for each dollar purchase cutomer will get\n{points} points, You're now *Logged out* from current session, but you can signin any time, Thanks."
             return {'state' : state, 'next_state' : 'welcome_state', 'message' : message}
         else:
             message = "Points cannot be empty or non-numeric, please re-enter valid numerical points."

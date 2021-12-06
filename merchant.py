@@ -12,7 +12,7 @@ class Merchant(Connect):
 
     def get_store_name(self, store_name):
         cursor = self.pointer()[0]
-        sql = "SELECT place_name FROM ly_merchant_creds"
+        sql = f"SELECT place_name FROM ly_merchant_creds WHERE place_name = '{store_name}'"
         cursor.execute(sql)
         store_name = cursor.fetchone()
         print("[INFO] GET Store Name", store_name)

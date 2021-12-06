@@ -30,6 +30,7 @@ class Test:
                 response = self.api(take, 'text')
             print("Bot Says: ", response)
 
-# Test('whatsapp:+923132609629').run()
+Test('whatsapp:+923132609629').run()
 # a = {'1' : 'Love your service 😍', "2" : 'Service was good 😃', '3' : 'It was ok 😐','4' : 'Dissapointing service 😔', '5' : 'Really upset 😤'}
 # print(a['1'][-1])
+# python app.py dev ip 5000

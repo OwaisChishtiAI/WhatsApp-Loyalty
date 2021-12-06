@@ -74,6 +74,9 @@ def reply():
 
     next_state, created_at = CustomerJourney().get_next_state(customer_number)
     chatbot = ChatBot(customer_number)
+    if message == "hi" or message == "Hi" or message == "HI":
+        print("[INFO] Re-initiating Conversation.")
+        next_state = None
     if not next_state is None:
         time_diff = datetime.now() - created_at
         if time_diff.total_seconds() > 1800:
