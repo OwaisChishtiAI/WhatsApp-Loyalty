@@ -59,7 +59,7 @@ class OCR:
         # result = '$' + result[0][1] + '.53'
         result = re.findall(r'\d+(?:[,.]\d+)*', result[0][1])
         if result:
-            return result[0].replace(',', '')
+            return float(result[0].replace(',', ''))
         else:
             return None
 

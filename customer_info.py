@@ -43,6 +43,17 @@ class CustomerInfo(Connect):
         else:
             return None
 
+    def get_allowed_places_list(self):
+        cursor = self.pointer()[0]
+        sql = f"SELECT place_name FROM ly_merchant_creds"
+        cursor.execute(sql)
+        places = cursor.fetchall()
+        self.close()
+        if all(places):
+            return [x[0] for x in places]
+        else:
+            return None
+
     def put_places_list(self, customer_number, place_name):
         previous_places = self.get_places_list(customer_number)
         if previous_places is not None:
@@ -58,7 +69,7 @@ class CustomerInfo(Connect):
         sql = f"UPDATE ly_customer_info SET places = '{previous_places}' WHERE customer_number = '{customer_number}'"
         cursor.execute(sql)
         db.commit()
-        print("[INFO] PUT Customer Name")
+        print("[INFO] PUT Place Name")
         self.close()
 
     def get_points_balance(self, customer_number):
@@ -78,7 +89,7 @@ class CustomerInfo(Connect):
     def put_points_balance(self, total_amount, customer_number):
         if int(total_amount) > 0:
             cursor, db = self.pointer()
-            sql = f"UPDATE ly_customer_info SET customer_points = '{total_amount}' \
+            sql = f"UPDATE ly_customer_info SET customer_points = {float(total_amount)} \
                 WHERE customer_number = '{customer_number}'"
             cursor.execute(sql)
             db.commit()

@@ -96,13 +96,14 @@ def reply():
             reply = eval("chatbot." + next_state)()
         elif next_state == "process_uploaded_recipt":
             def async_ocr_call(customer_number, chatbot):
-                total_amount = ocr.read_receipt_rule_based(customer_number)
+                total_amount = ocr.extract_roi_from_reciept(customer_number)
                 print("[INFO] Total Amount Fetched: ", total_amount)
                 reply = eval("chatbot." + next_state)(total_amount)
                 from_whatsapp_number = 'whatsapp:+14155238886'
                 to_whatsapp_number = f'whatsapp:{customer_number}'
+                print("[INFO] Sending async message to ", customer_number)
                 message = client.messages.create(body=reply['message'],
-                                    media_url='https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.123rf.com%2Fphoto_41726030_redeem-word-on-an-orange-ticket-to-illustrate-special-offer-redemption-or-contest-winning-entry.html&psig=AOvVaw0gJY8GxXeUJkYlUdN-SqFg&ust=1638346684105000&source=images&cd=vfe&ved=0CAsQjRxqFwoTCPiptZ7Tv_QCFQAAAAAdAAAAABAr',
+                                    media_url='https://static8.depositphotos.com/1006899/896/i/950/depositphotos_8961765-stock-photo-prize.jpg',
                                     from_=from_whatsapp_number,
                                     to=to_whatsapp_number)
                 print(message.sid)
@@ -121,7 +122,7 @@ def reply():
                 if next_state == "confirm_uploaded_recipt" or next_state == "welcome_state":
                     reply = eval("chatbot." + next_state)()
                 elif next_state == "process_uploaded_recipt":
-                    total_amount = ocr.read_receipt_rule_based(customer_number)
+                    total_amount = ocr.extract_roi_from_reciept(customer_number)
                     print("[INFO] Total Amount Fetched: ", total_amount)
                     reply = eval("chatbot." + next_state)(total_amount)
                 else:

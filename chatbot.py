@@ -1,5 +1,6 @@
 from customer_info import CustomerInfo
 from customer_journey import CustomerRatings
+from customer_extras import CustomerExtras
 from merchant import Merchant
 
 class ChatBot:
@@ -11,6 +12,7 @@ class ChatBot:
         self.ratings = {'1' : 'Love your service 😍', "2" : 'Service was good 😃', '3' : 'It was ok 😐',\
             '4' : 'Dissapointing service 😔', '5' : 'Really upset 😤'}
         self.merchant = Merchant()
+        self.customer_extras = CustomerExtras(self.customer_number)
 
     def welcome_state(self):
         state = "welcome_state"
@@ -84,16 +86,46 @@ class ChatBot:
         if previous_place.isdigit():
             places = self.customer_record.get_places_list(self.customer_number)
             place_name = places[int(previous_place) - 1]
-            print(places, place_name)
             if place_name:
                 message = f"You have checked into {place_name}"
+                self.customer_extras.post_put_last_visited_place(place_name)
             else:
-                print("Not valid place")
+                message = "Not valid place"
+                return {'state' : state, 'next_state' : state, 'message' : message}
         else:
-            self.customer_record.put_places_list(self.customer_number, previous_place)
-            message = f"You have checked into {previous_place}"
+            allowed_places = self.customer_record.get_allowed_places_list()
+            if previous_place in allowed_places:
+                self.customer_record.put_places_list(self.customer_number, previous_place)
+                message = f"You have checked into {previous_place}"
+                self.customer_extras.post_put_last_visited_place(previous_place)
+            else:
+                message = "Your entered place has no corresponding merchant.\nIf you have visited any places registered with us, please select from following,"
+                for i in range(len(allowed_places)):
+                    message = message + "\n" + str(i+1) + ". " + allowed_places[i]
+                return {'state' : state, 'next_state' : 'checked_in_state_for_allowed_places', 'message' : message}
 
         customer_points = self.customer_record.get_points_balance(self.customer_number)
+        message = message + f"\nYour points balance is {customer_points}"
+        message = message + "\nWhat would you like to do?\n1. Redeem\n2. Add\n3. More Options"
+        return {'state' : state, 'next_state' : next_state, 'message' : message}
+
+    def checked_in_state_for_allowed_places(self, allowed_place):
+        state = "checked_in_state_for_allowed_places"
+        next_state = "upload_receipt_state"
+
+        if allowed_place.isdigit():
+            places = self.customer_record.get_allowed_places_list()
+            place_name = places[int(allowed_place) - 1]
+            if place_name:
+                message = f"You have checked into {place_name}"
+                self.customer_extras.post_put_last_visited_place(place_name)
+            else:
+                message = "Not valid place"
+                return {'state' : state, 'next_state' : state, 'message' : message}
+        else:
+            return {'state' : state, 'next_state' : state, 'message' : 'Please select appropiate option'}
+
+        customer_points = self.customer_record.get_points_balance(self.customer_number)#need to add place as well
         message = message + f"\nYour points balance is {customer_points}"
         message = message + "\nWhat would you like to do?\n1. Redeem\n2. Add\n3. More Options"
         return {'state' : state, 'next_state' : next_state, 'message' : message}
@@ -151,6 +183,10 @@ class ChatBot:
         next_state = 'greetings_state'
 
         if int(total_amount) > 0:
+            last_visited_place = self.customer_extras.get_last_visited_place()
+            merchant_awarded_points = self.merchant.get_points_by_place_name(last_visited_place)
+            total_amount = merchant_awarded_points * total_amount
+            print("[INFO] Points Calculator: ", last_visited_place, merchant_awarded_points, total_amount)
             message = f"Congratulations! {total_amount} points have been added to your wallet\nYour new balance is {float(self.customer_record.get_points_balance(self.customer_number)) + float(total_amount)}"
             self.customer_record.put_points_balance(total_amount, self.customer_number)
         else:

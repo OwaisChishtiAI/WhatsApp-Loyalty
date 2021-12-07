@@ -52,7 +52,7 @@ class Merchant(Connect):
 
     def get_username(self, merchant_number):
         cursor = self.pointer()[0]
-        sql = f"SELECT username FROM ly_merchant_creds WHERE merchant_number = {merchant_number}"
+        sql = f"SELECT username FROM ly_merchant_creds WHERE merchant_number = '{merchant_number}'"
         cursor.execute(sql)
         username = cursor.fetchone()
         print("[INFO] GET User Name", username)
@@ -65,7 +65,7 @@ class Merchant(Connect):
 
     def get_password(self, merchant_number):
         cursor = self.pointer()[0]
-        sql = f"SELECT password FROM ly_merchant_creds WHERE merchant_number = {merchant_number}"
+        sql = f"SELECT password FROM ly_merchant_creds WHERE merchant_number = '{merchant_number}'"
         cursor.execute(sql)
         password = cursor.fetchone()
         print("[INFO] GET Pasword", password)
@@ -78,10 +78,23 @@ class Merchant(Connect):
 
     def get_points(self, merchant_number):
         cursor = self.pointer()[0]
-        sql = f"SELECT points_offer FROM ly_merchant_creds WHERE merchant_number = {merchant_number}"
+        sql = f"SELECT points_offer FROM ly_merchant_creds WHERE merchant_number = '{merchant_number}'"
         cursor.execute(sql)
         points = cursor.fetchone()
         print("[INFO] GET Points", points)
+        self.close()
+
+        if not points is None:
+            return points[0]
+        else:
+            return None
+
+    def get_points_by_place_name(self, place_name):
+        cursor = self.pointer()[0]
+        sql = f"SELECT points_offer FROM ly_merchant_creds WHERE place_name = '{place_name}'"
+        cursor.execute(sql)
+        points = cursor.fetchone()
+        print("[INFO] GET Points By Name ", points, place_name)
         self.close()
 
         if not points is None:
