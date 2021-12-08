@@ -101,3 +101,49 @@ class Merchant(Connect):
             return points[0]
         else:
             return None
+
+    def get_check_secret_entry_with_number(self, customer_number):
+        cursor = self.pointer()[0]
+        sql = f"SELECT place FROM ly_merchant_secret WHERE customer_number = '{customer_number}'"
+        cursor.execute(sql)
+        place = cursor.fetchone()
+        self.close()
+
+        if not place is None:
+            return place[0]
+        else:
+            return None
+
+    def post_merchant_secret_number_and_place(self,  customer_number, place):
+        existing_record = self.get_check_secret_entry_with_number(customer_number)
+        if existing_record is None:
+            cursor, db = self.pointer()
+            sql = "INSERT INTO ly_merchant_secret (customer_number, place, secret_code) VALUES (%s, %s, %s)"
+            cursor.execute(sql, (customer_number, place, ""))
+            db.commit()
+            print("[INFO] POST SECRET-Number,Name")
+            self.close()
+        else:
+            print("[INFO] Record for customer_name and place already exists in ly_merchant_secret")
+
+    def put_merchant_secret_number_and_place(self, customer_number, secret_code):
+        cursor, db = self.pointer()
+        sql = f"UPDATE ly_merchant_secret SET secret_code = '{secret_code}'\
+             WHERE customer_number = '{customer_number}'"
+        cursor.execute(sql)
+        db.commit()
+        print("[INFO] PUT SECRET-Code")
+        self.close()
+
+    def get_merchant_secret_number_and_place(self, place):
+        cursor = self.pointer()[0]
+        sql = f"SELECT secret_code FROM ly_merchant_secret WHERE place = '{place}'"
+        cursor.execute(sql)
+        secret_code = cursor.fetchone()
+        print("[INFO] GET SECRET CODE ", secret_code)
+        self.close()
+
+        if not secret_code is None:
+            return secret_code[0]
+        else:
+            return None

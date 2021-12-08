@@ -135,9 +135,8 @@ class ChatBot:
         next_state = "confirm_uploaded_recipt"
 
         if to_do == "1":
-            available_points = self.customer_record.get_points_balance(self.customer_number, self.customer_extras.get_last_visited_place())
-            message = f"How many points you want to redeem from {available_points} points available?"
-            return {'state' : state, 'next_state' : 'redeem_points_state', 'message' : message}
+            message = f"Please Enter Merchant Secret Code for *{self.customer_extras.get_last_visited_place()}*"
+            return {'state' : state, 'next_state' : 'enter_secret_code_state', 'message' : message}
 
         elif to_do == "2":
             message = "Let's do it!\nTake a clear picture of your receipt and upload it."
@@ -147,6 +146,20 @@ class ChatBot:
             message = "What would you like to do?\n1. Rate our services\n2. Checkin to another place\n\
                 3. Go back\n4. Exit"
             return {'state' : state, 'next_state' : 'possible_next_states_state', 'message' : message}
+
+    def enter_secret_code_state(self, code):
+        state = "enter_secret_code_state"
+        next_state = "redeem_points_state"
+
+        merchant_code = self.merchant.get_merchant_secret_number_and_place(self.customer_extras.get_last_visited_place())
+        print("CODES: ", merchant_code, code)
+        if code == merchant_code:
+            available_points = self.customer_record.get_points_balance(self.customer_number, self.customer_extras.get_last_visited_place())
+            message = f"How many points you want to redeem from {available_points} points available?"
+            return {'state' : state, 'next_state' : next_state, 'message' : message}
+        else:
+            message = f"Wrong Merchant Code."
+            return {'state' : state, 'next_state' : "enter_secret_code_state", 'message' : message}
 
     def redeem_points_state(self, points):
         state = "redeem_points_state"
@@ -247,6 +260,7 @@ class ChatBot:
             return {'state' : state, 'next_state' : 'login_username_state', 'message' : message}
 
         else:
+            self.merchant.post_merchant_secret_number_and_place(self.customer_number, user_store_name)
             message = "Please enter username e.g. *admin@wallmart.com*"
             self.merchant.post_store_name(user_store_name, self.customer_number)
             return {'state' : state, 'next_state' : next_state, 'message' : message}
@@ -325,12 +339,24 @@ class ChatBot:
 
     def add_points_state(self, points):
         state = "add_points_state"
-        next_state = ""
+        next_state = "add_secret_code_state"
 
         if points.isdigit():
             self.merchant.put_points(int(points), self.customer_number)
-            message = f"Thanks, your points have been saved, for each dollar purchase cutomer will get\n{points} points, You're now *Logged out* from current session, but you can signin any time, Thanks."
-            return {'state' : state, 'next_state' : 'welcome_state', 'message' : message}
+            message = f"Thanks, your points have been saved, for each dollar purchase cutomer will get\n{points} points.\nPlease Enter *SECRET CODE* for points redeem purpose."#, You're now *Logged out* from current session, but you can signin any time, Thanks."
+            return {'state' : state, 'next_state' : 'add_secret_code_state', 'message' : message}
         else:
             message = "Points cannot be empty or non-numeric, please re-enter valid numerical points."
             return {'state' : state, 'next_state' : 'add_points_state', 'message' : message}
+    
+    def add_secret_code_state(self, code):
+        state = "add_secret_code_state"
+        next_state = "welcome_state"
+
+        if code:
+            self.merchant.put_merchant_secret_number_and_place(self.customer_number, code)
+            message = f"Thanks, Your code has been registered, use this code when customer needs to redeem points."#, You're now *Logged out* from current session, but you can signin any time, Thanks."
+            return {'state' : state, 'next_state' : 'welcome_state', 'message' : message}
+        else:
+            message = "Code cannot be empty, please re-enter valid numerical points."
+            return {'state' : state, 'next_state' : 'add_secret_code_state', 'message' : message}

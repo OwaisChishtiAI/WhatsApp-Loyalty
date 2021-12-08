@@ -92,6 +92,7 @@ def reply():
         reply = chatbot.welcome_state()
         CustomerJourney().post_customer_number(customer_number)
         CustomerJourney().put_states(reply['state'], reply['next_state'], customer_number)
+        print("REPLY", reply)
         return respond(reply['message'])
     else:
         print("[INFO] Tree Messages")
@@ -109,9 +110,13 @@ def reply():
                     reply = {}
                     reply['message'] = "Please be fair, this receipt has already been processed"
                     reply['next_state'] = "process_uploaded_recipt"
+                elif total_amount == "invalid place":
+                    reply = {}
+                    reply['message'] = "Please be fair, this receipt is not of your signed-in place."
+                    reply['next_state'] = "process_uploaded_recipt"
                 elif total_amount == "cannot find":
                     reply = {}
-                    reply['message'] = "We are unable to find prices, please change angle of reciept or capture picture in proper lightnings."
+                    reply['message'] = "We are unable to read receipt properly, please change angle of reciept or capture picture in proper lightnings."
                     reply['next_state'] = "process_uploaded_recipt"
                 else:
                     print(['[INFO] Nano Nets has worked'])
@@ -131,7 +136,7 @@ def reply():
                 'Please wait, we are validating your receipt and shortly we will notify you, please do not send any message meanwhile\nThanks.'}
         else:
             reply = eval("chatbot." + next_state)(message)
-        
+        print("REPLY", reply)
         if not reply is None:
             proactive = reply.get('proactive')
             if proactive:
@@ -150,9 +155,13 @@ def reply():
                 reply['message'] = previous_message + reply['message']
             CustomerJourney().put_states(reply['state'], reply['next_state'], customer_number)
             if is_test:
+                print("TESSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSST")
                 return reply['message']
             else:
+                print("[REPLY] ", reply['message'])
                 return respond(reply['message'])
+        else:
+            print("reply is None", reply)
 
 @app.route("/admin_login", methods=['POST'])
 def admin_login_func():

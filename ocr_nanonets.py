@@ -29,6 +29,14 @@ class NanoNetsOCR:
         if old_receipt_data is None:
             customer_extra.put_last_receipt_data(receipt_data)
             total_amount = receipt_data.get('Total_Amount')
+            merchant_name = receipt_data.get('Merchant_Name')
+            if not merchant_name is None:
+                if customer_extra.get_last_visited_place().lower().strip() in merchant_name.lower().strip():
+                    print("[INFO] Place Match: ", customer_extra.get_last_visited_place().lower().strip(), merchant_name.lower().strip())
+                else:
+                    "invalid place"
+            else:
+                return "cannot find"
             if not total_amount is None:
                 total_amount = re.findall(r'\d+(?:[,.]\d+)*', receipt_data['Total_Amount'])
                 total_amount = "".join(total_amount).replace(",", "")
