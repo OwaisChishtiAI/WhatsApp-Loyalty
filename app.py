@@ -21,6 +21,9 @@ else:
     print("DEV SERVER...")
 from dashboard_apis import DashBoardAPI
 
+# For NanoNets API
+from ocr_nanonets import NanoNetsOCR
+
 load_dotenv()
 # print(os.environ.get("TWILIO_ACCOUNT_SID"))
 
@@ -96,9 +99,25 @@ def reply():
             reply = eval("chatbot." + next_state)()
         elif next_state == "process_uploaded_recipt":
             def async_ocr_call(customer_number, chatbot):
-                total_amount = ocr.extract_roi_from_reciept(customer_number)
-                print("[INFO] Total Amount Fetched: ", total_amount)
-                reply = eval("chatbot." + next_state)(total_amount)
+                total_amount = NanoNetsOCR().parse_data_from_receipt(customer_number)
+                if total_amount is None:
+                    print(['[INFO] Nano Nets has failed'])
+                    total_amount = ocr.extract_roi_from_reciept(customer_number)
+                    print("[INFO] Total Amount Fetched: ", total_amount)
+                    reply = eval("chatbot." + next_state)(total_amount)
+                elif total_amount == "same":
+                    reply = {}
+                    reply['message'] = "Please be fair, this receipt has already been processed"
+                    reply['next_state'] = "process_uploaded_recipt"
+                elif total_amount == "cannot find":
+                    reply = {}
+                    reply['message'] = "We are unable to find prices, please change angle of reciept or capture picture in proper lightnings."
+                    reply['next_state'] = "process_uploaded_recipt"
+                else:
+                    print(['[INFO] Nano Nets has worked'])
+                    print("[INFO] Total Amount Fetched: ", total_amount)
+                    reply = eval("chatbot." + next_state)(total_amount)
+
                 from_whatsapp_number = 'whatsapp:+14155238886'
                 to_whatsapp_number = f'whatsapp:{customer_number}'
                 print("[INFO] Sending async message to ", customer_number)
@@ -106,7 +125,7 @@ def reply():
                                     media_url='https://static8.depositphotos.com/1006899/896/i/950/depositphotos_8961765-stock-photo-prize.jpg',
                                     from_=from_whatsapp_number,
                                     to=to_whatsapp_number)
-                print(message.sid)
+                print("Message Sent, ", message.sid)
             threading.Thread(target=async_ocr_call, args=([customer_number, chatbot]), kwargs={}).start()
             reply = {'state' : 'process_uploaded_recipt', 'next_state' : 'greetings_state', 'message' : \
                 'Please wait, we are validating your receipt and shortly we will notify you, please do not send any message meanwhile\nThanks.'}

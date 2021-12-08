@@ -72,21 +72,23 @@ class CustomerInfo(Connect):
         print("[INFO] PUT Place Name")
         self.close()
 
-    def get_points_balance(self, customer_number):
+    def get_points_balance(self, customer_number, place):
         cursor = self.pointer()[0]
-        sql = f"SELECT customer_points FROM ly_customer_info WHERE customer_number = '{customer_number}'"
+        sql = f"SELECT points FROM ly_customer_points WHERE customer_number = '{customer_number}' AND place = '{place}'"
         cursor.execute(sql)
-        points = cursor.fetchone()
+        points = cursor.fetchall()
         self.close()
 
-        if not points is None:
-            points = points[0]
+        if all(points):
+            total_points = 0
+            for each in points:
+                total_points += each[0]
             print("[INFO] GET Points", points)
-            return int(points)
+            return float(total_points)
         else:
             return 0
 
-    def put_points_balance(self, total_amount, customer_number):
+    def put_points_balance(self, total_amount, customer_number): # NOT IN USE -> OBSELETE : USE post_points_balance
         if int(total_amount) > 0:
             cursor, db = self.pointer()
             sql = f"UPDATE ly_customer_info SET customer_points = {float(total_amount)} \
@@ -98,10 +100,14 @@ class CustomerInfo(Connect):
         else:
             print("[INFO] Insufficient Amount to add", total_amount)
 
-# print(CustomerInfo().get_customer_name('03132609629'))
-# CustomerInfo().post_customer_name('owais', '03132609629')
-# CustomerInfo().get_places_list('03132609629')
-# CustomerInfo().post_places_list('03132609629', 'alabama')
-# print(CustomerInfo().get_points_balance('03132609629'))
-# CustomerInfo().put_points_balance(0, '03132609629')
-# print(CustomerInfo().get_points_balance('03132609629'))
+    def post_points_balance(self, total_amount, customer_number, place):
+        if int(total_amount) > 0:
+            cursor, db = self.pointer()
+            sql = "INSERT INTO ly_customer_points (customer_number, place, points) VALUES (%s, %s, %s)"
+            cursor.execute(sql, (customer_number, place, total_amount))
+            db.commit()
+            print("[INFO] POST Customer Points")
+            self.close()
+        else:
+            print("[INFO] Insufficient Amount to add", total_amount)
+

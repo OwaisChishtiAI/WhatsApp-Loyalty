@@ -1,4 +1,5 @@
 import json
+import ast
 
 from database import Connect
 
@@ -27,8 +28,30 @@ class CustomerExtras(Connect):
             cursor.execute(sql)
             print("[INFO] PUT Last Visited Place")
         else:
-            sql = "INSERT INTO ly_customer_extras (customer_number, last_visited_place) VALUES (%s, %s)"
-            cursor.execute(sql, (self.customer_number, place))
+            sql = "INSERT INTO ly_customer_extras (customer_number, last_visited_place, last_receipt_data) VALUES (%s, %s, %s)"
+            cursor.execute(sql, (self.customer_number, place, ""))
             print("[INFO] POST Last Visited Place")
         db.commit()
         self.close()
+
+    def put_last_receipt_data(self, json_data):
+        json_data = json.dumps(json_data)
+        cursor, db = self.pointer()
+        sql = f"UPDATE ly_customer_extras SET last_receipt_data = '{json_data}' WHERE customer_number = '{self.customer_number}'"
+        cursor.execute(sql)
+        print("[INFO] PUT Last Receipt Data")
+        db.commit()
+        self.close()
+
+    def get_last_receipt_data(self):
+        cursor = self.pointer()[0]
+        sql = f"SELECT last_receipt_data FROM ly_customer_extras WHERE customer_number = '{self.customer_number}'"
+        cursor.execute(sql)
+        last_receipt_data = cursor.fetchone()
+        print("[INFO] GET Last Receipt Data", last_receipt_data)
+        self.close()
+        
+        if last_receipt_data[0]:
+            return ast.literal_eval(last_receipt_data[0])
+        else:
+            return None

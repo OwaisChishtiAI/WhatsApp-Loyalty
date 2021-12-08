@@ -51,3 +51,5 @@ class CustomerRatings(Connect):
 # CustomerJourney().post_customer_number('03132609629')
 # CustomerJourney().put_states('a', 'b','03132609629')
 # print(CustomerJourney().get_next_state('03132609629'))
+# for _ in range(4):
+#     CustomerRatings().post_rating("I love it", "02828292", "4")

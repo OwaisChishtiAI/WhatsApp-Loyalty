@@ -104,7 +104,7 @@ class ChatBot:
                     message = message + "\n" + str(i+1) + ". " + allowed_places[i]
                 return {'state' : state, 'next_state' : 'checked_in_state_for_allowed_places', 'message' : message}
 
-        customer_points = self.customer_record.get_points_balance(self.customer_number)
+        customer_points = self.customer_record.get_points_balance(self.customer_number, place_name)
         message = message + f"\nYour points balance is {customer_points}"
         message = message + "\nWhat would you like to do?\n1. Redeem\n2. Add\n3. More Options"
         return {'state' : state, 'next_state' : next_state, 'message' : message}
@@ -125,7 +125,7 @@ class ChatBot:
         else:
             return {'state' : state, 'next_state' : state, 'message' : 'Please select appropiate option'}
 
-        customer_points = self.customer_record.get_points_balance(self.customer_number)#need to add place as well
+        customer_points = self.customer_record.get_points_balance(self.customer_number, place_name)
         message = message + f"\nYour points balance is {customer_points}"
         message = message + "\nWhat would you like to do?\n1. Redeem\n2. Add\n3. More Options"
         return {'state' : state, 'next_state' : next_state, 'message' : message}
@@ -135,7 +135,7 @@ class ChatBot:
         next_state = "confirm_uploaded_recipt"
 
         if to_do == "1":
-            available_points = self.customer_record.get_points_balance(self.customer_number)
+            available_points = self.customer_record.get_points_balance(self.customer_number, self.customer_extras.get_last_visited_place())
             message = f"How many points you want to redeem from {available_points} points available?"
             return {'state' : state, 'next_state' : 'redeem_points_state', 'message' : message}
 
@@ -154,11 +154,11 @@ class ChatBot:
 
         if points:
             try:
-                available_points = self.customer_record.get_points_balance(self.customer_number)
+                available_points = self.customer_record.get_points_balance(self.customer_number, self.customer_extras.get_last_visited_place())
                 if float(points) <= available_points:
                     available_points = available_points - float(points)
                     message = f"{points} points redeemed, your points balance is {available_points}"
-                    self.customer_record.put_points_balance(available_points, self.customer_number)
+                    self.customer_record.post_points_balance(available_points, self.customer_number, self.customer_extras.get_last_visited_place())
                     return {'state' : state, 'next_state' : next_state, 'message' : message}
                 else:
                     message = f"Your redeem points must be less than your balance, you have *{available_points}* balanace points."
@@ -187,8 +187,8 @@ class ChatBot:
             merchant_awarded_points = self.merchant.get_points_by_place_name(last_visited_place)
             total_amount = merchant_awarded_points * total_amount
             print("[INFO] Points Calculator: ", last_visited_place, merchant_awarded_points, total_amount)
-            message = f"Congratulations! {total_amount} points have been added to your wallet\nYour new balance is {float(self.customer_record.get_points_balance(self.customer_number)) + float(total_amount)}"
-            self.customer_record.put_points_balance(total_amount, self.customer_number)
+            message = f"Congratulations! {total_amount} points have been added to your wallet\nYour new balance is {float(self.customer_record.get_points_balance(self.customer_number, self.customer_extras.get_last_visited_place())) + float(total_amount)}"
+            self.customer_record.post_points_balance(total_amount, self.customer_number, last_visited_place)
         else:
             message = "You are not awarded this time, your purchases are not sufficient."
         return {'state' : state, 'next_state' : next_state, 'message' : message, 'proactive' : True}

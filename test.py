@@ -1,7 +1,4 @@
-# from flask.wrappers import Response
 import requests
-# from torch.utils import data
-from database import Connect
 
 BASE_URL = "http://localhost:5000/message"
 
@@ -33,16 +30,3 @@ class Test:
 
 Test('whatsapp:+923132609629').run()
 # a = {'1' : 'Love your service 😍', "2" : 'Service was good 😃', '3' : 'It was ok 😐','4' : 'Dissapointing service 😔', '5' : 'Really upset 😤'}
-# print(a['1'][-1])
-# python app.py dev ip 5000
-# self = Connect()
-# cursor = self.pointer()[0]
-# sql = "SELECT place_name FROM ly_merchant_creds"
-# cursor.execute(sql)
-# places = cursor.fetchall()
-# self.close()
-# if all(places):
-#     print ([x[0] for x in places])
-# else:
-#     print ("None")
-# print(places)
