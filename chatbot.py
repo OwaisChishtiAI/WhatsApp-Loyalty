@@ -153,7 +153,7 @@ class ChatBot:
         state = "enter_secret_code_state"
         next_state = "redeem_points_state"
 
-        merchant_code = self.merchant.get_merchant_secret_number_and_place(self.customer_extras.get_last_visited_place())
+        merchant_code = self.merchant.get_merchant_secret_number_and_place(self.customer_extras.get_last_visited_place(), self.customer_number)
         print("CODES: ", merchant_code, code)
         if code == merchant_code:
             available_points = self.customer_record.get_points_balance(self.customer_number, self.customer_extras.get_last_visited_place())

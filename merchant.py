@@ -114,9 +114,9 @@ class Merchant(Connect):
         else:
             return None
 
-    def get_check_secret_entry_with_number(self, customer_number):
+    def get_check_secret_entry_with_number(self, customer_number, place):
         cursor = self.pointer()[0]
-        sql = f"SELECT place FROM ly_merchant_secret WHERE customer_number = '{customer_number}'"
+        sql = f"SELECT place FROM ly_merchant_secret WHERE customer_number = '{customer_number}' AND place = '{place}'"
         cursor.execute(sql)
         place = cursor.fetchone()
         self.close()
@@ -127,7 +127,7 @@ class Merchant(Connect):
             return None
 
     def post_merchant_secret_number_and_place(self,  customer_number, place):
-        existing_record = self.get_check_secret_entry_with_number(customer_number)
+        existing_record = self.get_check_secret_entry_with_number(customer_number, place)
         if existing_record is None:
             cursor, db = self.pointer()
             sql = "INSERT INTO ly_merchant_secret (customer_number, place, secret_code) VALUES (%s, %s, %s)"
@@ -140,16 +140,20 @@ class Merchant(Connect):
 
     def put_merchant_secret_number_and_place(self, customer_number, secret_code):
         cursor, db = self.pointer()
+        sql = f"SELECT place FROM ly_merchant_secret WHERE merchant_id = (SELECT MAX(merchant_id)\
+             FROM ly_merchant_secret WHERE customer_number = '{customer_number}')"
+        cursor.execute(sql)
+        place = cursor.fetchone()[0]
         sql = f"UPDATE ly_merchant_secret SET secret_code = '{secret_code}'\
-             WHERE customer_number = '{customer_number}'"
+             WHERE customer_number = '{customer_number}' AND place = '{place}'"
         cursor.execute(sql)
         db.commit()
         print("[INFO] PUT SECRET-Code")
         self.close()
 
-    def get_merchant_secret_number_and_place(self, place):
+    def get_merchant_secret_number_and_place(self, place, customer_number):
         cursor = self.pointer()[0]
-        sql = f"SELECT secret_code FROM ly_merchant_secret WHERE place = '{place}'"
+        sql = f"SELECT secret_code FROM ly_merchant_secret WHERE place = '{place}' AND customer_number = '{customer_number}'"
         cursor.execute(sql)
         secret_code = cursor.fetchone()
         print("[INFO] GET SECRET CODE ", secret_code)
