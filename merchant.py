@@ -25,26 +25,38 @@ class Merchant(Connect):
 
     def put_user_name(self, username, merchant_number):
         cursor, db = self.pointer()
+        sql = f"SELECT place_name FROM ly_merchant_creds WHERE merchant_id = (SELECT MAX(merchant_id)\
+             FROM ly_merchant_creds WHERE merchant_number = '{merchant_number}')"
+        cursor.execute(sql)
+        place_name = cursor.fetchone()[0]
         sql = f"UPDATE ly_merchant_creds SET username = '{username}'\
-             WHERE merchant_number = '{merchant_number}'"
+             WHERE merchant_number = '{merchant_number}' AND place_name = '{place_name}'"
         cursor.execute(sql)
         db.commit()
-        print("[INFO] PUT User Name")
+        print("[INFO] PUT User Name", username, place_name)
         self.close()
 
     def put_password(self, password, merchant_number):
         cursor, db = self.pointer()
+        sql = f"SELECT place_name FROM ly_merchant_creds WHERE merchant_id = (SELECT MAX(merchant_id)\
+             FROM ly_merchant_creds WHERE merchant_number = '{merchant_number}')"
+        cursor.execute(sql)
+        place_name = cursor.fetchone()[0]
         sql = f"UPDATE ly_merchant_creds SET password = '{password}'\
-             WHERE merchant_number = '{merchant_number}'"
+             WHERE merchant_number = '{merchant_number}' AND place_name = '{place_name}'"
         cursor.execute(sql)
         db.commit()
-        print("[INFO] PUT Password")
+        print("[INFO] PUT Password", password, place_name)
         self.close()
 
     def put_points(self, points_offer, merchant_number):
         cursor, db = self.pointer()
+        sql = f"SELECT place_name FROM ly_merchant_creds WHERE merchant_id = (SELECT MAX(merchant_id)\
+             FROM ly_merchant_creds WHERE merchant_number = '{merchant_number}')"
+        cursor.execute(sql)
+        place_name = cursor.fetchone()[0]
         sql = f"UPDATE ly_merchant_creds SET points_offer = '{points_offer}'\
-             WHERE merchant_number = '{merchant_number}'"
+             WHERE merchant_number = '{merchant_number}' AND place_name = '{place_name}'"
         cursor.execute(sql)
         db.commit()
         print("[INFO] PUT Points Offer")
@@ -147,3 +159,5 @@ class Merchant(Connect):
             return secret_code[0]
         else:
             return None
+
+# Merchant().put_user_name("imtiaz", "+923132609629")

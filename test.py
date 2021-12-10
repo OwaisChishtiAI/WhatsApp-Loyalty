@@ -24,6 +24,9 @@ class Test:
             take = input("> ")
             if 'http' in take:
                 response = self.api(take, 'media')
+            elif 'exit' in take:
+                self.talk = False
+                response = "Bye!"
             else:
                 response = self.api(take, 'text')
             print("Bot Says: ", response)

@@ -98,6 +98,7 @@ class ChatBot:
                 self.customer_record.put_places_list(self.customer_number, previous_place)
                 message = f"You have checked into {previous_place}"
                 self.customer_extras.post_put_last_visited_place(previous_place)
+                place_name = previous_place
             else:
                 message = "Your entered place has no corresponding merchant.\nIf you have visited any places registered with us, please select from following,"
                 for i in range(len(allowed_places)):
@@ -118,6 +119,7 @@ class ChatBot:
             place_name = places[int(allowed_place) - 1]
             if place_name:
                 message = f"You have checked into {place_name}"
+                self.customer_record.put_places_list(self.customer_number, place_name)
                 self.customer_extras.post_put_last_visited_place(place_name)
             else:
                 message = "Not valid place"

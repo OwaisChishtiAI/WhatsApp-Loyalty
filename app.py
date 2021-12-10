@@ -45,6 +45,12 @@ def respond(message):
     response.message(message)
     return str(response)
 
+@app.route("/test", methods=['POST'])
+def test():
+    response = MessagingResponse()
+    response.message("message received")
+    return str(response)
+
 @app.route('/message', methods=['POST'])
 def reply():
     sender = request.form.get('From')
@@ -92,8 +98,12 @@ def reply():
         reply = chatbot.welcome_state()
         CustomerJourney().post_customer_number(customer_number)
         CustomerJourney().put_states(reply['state'], reply['next_state'], customer_number)
-        print("REPLY", reply)
-        return respond(reply['message'])
+        if is_test:
+            print("TESSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSST")
+            return reply['message']
+        else:
+            print("[REPLY]", reply)
+            return respond(reply['message'])
     else:
         print("[INFO] Tree Messages")
         if next_state == "confirm_uploaded_recipt" or next_state == "welcome_state":
