@@ -234,7 +234,9 @@ class ChatBot:
         message = "Thank You, your feedback has been registered, we will furnish our services as per your feedback."
         return {'state' : state, 'next_state' : next_state, 'message' : message, 'proactive' : True}
 
+#--------------------------------------------------------------------------------------------------------------#
 #///////////////////////////////////////****** MERCHANT STORIES *******////////////////////////////////////////#
+#--------------------------------------------------------------------------------------------------------------#
 
     def enrollment_state(self, enroll):
         state = 'enrollment_state'
@@ -265,6 +267,7 @@ class ChatBot:
             self.merchant.post_merchant_secret_number_and_place(self.customer_number, user_store_name)
             message = "Please enter username e.g. *admin@wallmart.com*"
             self.merchant.post_store_name(user_store_name, self.customer_number)
+            self.merchant.post_store_status(user_store_name, self.customer_number)
             return {'state' : state, 'next_state' : next_state, 'message' : message}
 
     def login_store_name_state(self, store_name):
@@ -357,8 +360,8 @@ class ChatBot:
 
         if code:
             self.merchant.put_merchant_secret_number_and_place(self.customer_number, code)
-            message = f"Thanks, Your code has been registered, use this code when customer needs to redeem points."#, You're now *Logged out* from current session, but you can signin any time, Thanks."
-            return {'state' : state, 'next_state' : 'welcome_state', 'message' : message}
+            message = f"Your code has been registered, use this code when customer needs to redeem points, You're now *Logged out* from current session, but you can signin any time, Thanks."
+            return {'state' : state, 'next_state' : next_state, 'message' : message}
         else:
             message = "Code cannot be empty, please re-enter valid numerical points."
             return {'state' : state, 'next_state' : 'add_secret_code_state', 'message' : message}

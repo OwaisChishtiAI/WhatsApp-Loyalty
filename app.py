@@ -65,7 +65,8 @@ def reply():
         elif content_type == 'image/png':
             filename = f'uploads/{customer_number}/{message}.png'
         elif content_type == 'image/gif':
-            filename = f'uploads/{customer_number}/{message}.gif'
+            # filename = f'uploads/{customer_number}/{message}.gif'
+            return respond('The file that you submitted is not a supported image type.')
         else:
             filename = None
         if filename:
@@ -212,6 +213,21 @@ def get_admin_merchant_creds_table_func():
     merchant_info = DashBoardAPI().get_admin_merchant_creds_table()
 
     return jsonify({'merchant_info' : merchant_info})
+
+@app.route("/get_store_status_endpoint", methods=['POST'])
+def get_store_status_func():
+    records = DashBoardAPI().get_store_status()
+
+    return jsonify({'store_records' : records})
+
+@app.route("/put_store_status_endpoint", methods=['POST'])
+def put_store_status_func():
+    record = request.form.to_dict()
+    status = record['status']
+    merchant_number = record['merchant_number']
+    DashBoardAPI().put_store_status(status, merchant_number)
+
+    return jsonify({'store_records' : "updated"})
 
 if __name__ == "__main__":
   app.run(ip_addr,port=port, debug=True)

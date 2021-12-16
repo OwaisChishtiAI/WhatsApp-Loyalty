@@ -45,7 +45,7 @@ class CustomerInfo(Connect):
 
     def get_allowed_places_list(self):
         cursor = self.pointer()[0]
-        sql = f"SELECT place_name FROM ly_merchant_creds"
+        sql = f"SELECT place FROM ly_merchant_place_verification WHERE status = 'live'"
         cursor.execute(sql)
         places = cursor.fetchall()
         self.close()

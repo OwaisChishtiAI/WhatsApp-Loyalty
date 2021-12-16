@@ -164,4 +164,12 @@ class Merchant(Connect):
         else:
             return None
 
+    def post_store_status(self, store_name, merchant_number):
+        cursor, db = self.pointer()
+        sql = "INSERT INTO ly_merchant_place_verification (merchant_number, place, status) VALUES (%s, %s, %s)"
+        cursor.execute(sql, (merchant_number, store_name, 'hold'))
+        db.commit()
+        print("[INFO] POST Store Status")
+        self.close()
+
 # Merchant().put_user_name("imtiaz", "+923132609629")

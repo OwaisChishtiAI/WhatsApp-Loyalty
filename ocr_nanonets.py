@@ -3,6 +3,7 @@ import re
 import requests
 
 from customer_extras import CustomerExtras
+from classify_label import ReceiptClassifier
 
 class NanoNetsOCR:
     def compare_data(self, data1, data2):
@@ -60,12 +61,17 @@ class NanoNetsOCR:
                 print("[INFO] Total Amount, Merchant Name: ", total_amount, merchant_name)
                 if not merchant_name is None:
                     if customer_extra.get_last_visited_place().lower().strip() in merchant_name.lower().strip():
-                        print("[INFO] Place Match: ", customer_extra.get_last_visited_place().lower().strip(), merchant_name.lower().strip())
+                    # if customer_extra.get_last_visited_place().lower().strip() in ReceiptClassifier(customer_number).predict():
+                        print("[INFO] NANO NETS Place Match: ", customer_extra.get_last_visited_place().lower().strip(), merchant_name.lower().strip())
                     else:
-                        print("[INFO] Place NOT Match: ", customer_extra.get_last_visited_place().lower().strip(), merchant_name.lower().strip())
+                        print("[INFO] NANO NETS Place NOT Match: ", customer_extra.get_last_visited_place().lower().strip(), merchant_name.lower().strip())
                         return "invalid place"
                 else:
-                    return "cannot find"
+                    if customer_extra.get_last_visited_place().lower().strip() in ReceiptClassifier(customer_number).predict():
+                        print("[INFO] CNN Place Match: ", customer_extra.get_last_visited_place().lower().strip(), merchant_name.lower().strip())
+                    else:
+                        print("[INFO] CNN Place NOT Match: ", customer_extra.get_last_visited_place().lower().strip(), merchant_name.lower().strip())
+                        return "invalid place"
                 if not total_amount is None:
                     total_amount = re.findall(r'\d+(?:[,.]\d+)*', receipt_data['Total_Amount'])
                     total_amount = "".join(total_amount).replace(",", "")

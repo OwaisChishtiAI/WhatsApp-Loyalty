@@ -102,5 +102,37 @@ class DashBoardAPI(Connect):
 
         return all_records
 
+    def get_store_status(self):
+        cursor = self.pointer()[0]
+        sql = f"SELECT * FROM ly_merchant_place_verification"
+        cursor.execute(sql)
+        records = cursor.fetchall()
+        print("[INFO] GET Store Status", records)
+        self.close()
 
-# print(DashBoardAPI().get_admin_merchant_creds_table())
+        all_records = []
+        for i in range(len(records)):
+            individual_record = {}
+            individual_record['merchant_id'] = records[i][0]
+            individual_record['merchant_number'] = records[i][1]
+            individual_record['place'] = records[i][2]
+            individual_record['status'] = records[i][3]
+            all_records.append(individual_record)
+
+        return all_records
+
+    def put_store_status(self, status, merchant_number):
+        cursor, db = self.pointer()
+        sql = f"SELECT place FROM ly_merchant_place_verification WHERE merchant_id = (SELECT MAX(merchant_id)\
+             FROM ly_merchant_place_verification WHERE merchant_number = '{merchant_number}')"
+        cursor.execute(sql)
+        place_name = cursor.fetchone()[0]
+        sql = f"UPDATE ly_merchant_place_verification SET status = '{status}'\
+             WHERE merchant_number = '{merchant_number}' AND place = '{place_name}'"
+        cursor.execute(sql)
+        db.commit()
+        print("[INFO] PUT Store Status", status, place_name)
+        self.close()
+
+
+# print(DashBoardAPI().put_store_status('live', '23232'))
